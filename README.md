@@ -1,16 +1,18 @@
 # mcp-drift
 
-MCP server URLs are not versioned. A server operator can silently change the tool list
-at any time — adding a malicious tool that exfiltrates tokens, altering descriptions to
-hijack LLM behaviour, or removing tools without notice.
-
-The MCP spec defines a `notifications/tools/list_changed` notification, but it is unclear at what stage this notification
-is dispatched.
-A client cannot indefinitely have a persistent connection with the MCP server.
-
 **mcp-drift** detects silent changes by polling public MCP servers daily and diffing
 against a committed snapshot. If the tool list changes, it opens a pull request with the
 diff so the change is on record and reviewable.
+
+## Why?
+
+MCP server URLs are not versioned. A server operator can silently change the tool list
+at any time by adding a malicious tool that exfiltrates tokens, altering descriptions to
+hijack LLM behaviour, or removing tools without notice.
+
+The MCP spec defines a [`notifications/tools/list_changed`](https://modelcontextprotocol.io/specification/2025-11-25/server/tools#capabilities)
+notification, but it is unclear at what stage this notification is dispatched.
+A client cannot indefinitely have a persistent connection with the MCP server.
 
 ## Monitored Servers
 
