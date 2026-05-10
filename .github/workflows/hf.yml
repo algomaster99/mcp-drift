@@ -1,4 +1,4 @@
-name: HuggingFace MCP Drift
+name: HuggingFace MCP Tools
 
 on:
   schedule:
