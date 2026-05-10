@@ -9,6 +9,9 @@ permissions:
   contents: write
   pull-requests: write
 
+env:
+  MCP_URL: https://huggingface.co/mcp
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -25,11 +28,11 @@ jobs:
 
       - name: Initialize — get mcp-session-id
         run: |
-          echo "MCP_SESSION=$(./mcp-drift initialize https://huggingface.co/mcp)" >> $GITHUB_ENV
+          echo "MCP_SESSION=$(./mcp-drift initialize "$MCP_URL")" >> $GITHUB_ENV
 
       - name: Fetch tools/list
         run: |
-          ./mcp-drift tools-list --session "$MCP_SESSION" https://huggingface.co/mcp > live.json
+          ./mcp-drift tools-list --session "$MCP_SESSION" "$MCP_URL" > live.json
 
       - name: Compare to snapshot
         id: diff
@@ -40,12 +43,6 @@ jobs:
           else
             echo "Drift detected!"
             echo "drifted=true" >> $GITHUB_OUTPUT
-            DIFF=$(diff snapshots/tools/huggingface.json live.json || true)
-            {
-              echo 'diff<<EOF_DIFF'
-              echo "$DIFF"
-              echo 'EOF_DIFF'
-            } >> $GITHUB_OUTPUT
           fi
 
       - name: Open PR with updated snapshot
@@ -63,6 +60,6 @@ jobs:
           git push origin "$BRANCH"
           gh pr create \
             --title "MCP drift detected: huggingface ($(date +%Y-%m-%d))" \
-            --body "$(printf '## Tool list changed\n\n\`\`\`diff\n%s\n\`\`\`' '${{ steps.diff.outputs.diff }}')" \
+            --body "The tool list at $MCP_URL has changed. Review the snapshot diff in the files changed tab." \
             --base main \
             --head "$BRANCH"
