@@ -1,0 +1,68 @@
+name: HuggingFace MCP Drift
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build
+        run: go build -o mcp-drift .
+
+      - name: Initialize — get mcp-session-id
+        run: |
+          echo "MCP_SESSION=$(./mcp-drift initialize https://huggingface.co/mcp)" >> $GITHUB_ENV
+
+      - name: Fetch tools/list
+        run: |
+          ./mcp-drift tools-list --session "$MCP_SESSION" https://huggingface.co/mcp > live.json
+
+      - name: Compare to snapshot
+        id: diff
+        run: |
+          if diff -q snapshots/tools/huggingface.json live.json > /dev/null 2>&1; then
+            echo "No drift detected."
+            echo "drifted=false" >> $GITHUB_OUTPUT
+          else
+            echo "Drift detected!"
+            echo "drifted=true" >> $GITHUB_OUTPUT
+            DIFF=$(diff snapshots/tools/huggingface.json live.json || true)
+            {
+              echo 'diff<<EOF_DIFF'
+              echo "$DIFF"
+              echo 'EOF_DIFF'
+            } >> $GITHUB_OUTPUT
+          fi
+
+      - name: Open PR with updated snapshot
+        if: steps.diff.outputs.drifted == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="drift/huggingface-$(date +%Y-%m-%d)"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git checkout -b "$BRANCH"
+          cp live.json snapshots/tools/huggingface.json
+          git add snapshots/tools/huggingface.json
+          git commit -m "drift: huggingface tools/list changed $(date +%Y-%m-%d)"
+          git push origin "$BRANCH"
+          gh pr create \
+            --title "MCP drift detected: huggingface ($(date +%Y-%m-%d))" \
+            --body "$(printf '## Tool list changed\n\n\`\`\`diff\n%s\n\`\`\`' '${{ steps.diff.outputs.diff }}')" \
+            --base main \
+            --head "$BRANCH"
