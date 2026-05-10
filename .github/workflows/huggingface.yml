@@ -59,7 +59,7 @@ jobs:
           git commit -m "drift: huggingface tools/list changed $(date +%Y-%m-%d)"
           git push origin "$BRANCH"
           gh pr create \
-            --title "MCP drift detected: huggingface ($(date +%Y-%m-%d))" \
+            --title "drift: huggingface tools/list changed ($(date +%Y-%m-%d))" \
             --body "The tool list at $MCP_URL has changed. Review the snapshot diff in the files changed tab." \
             --base main \
             --head "$BRANCH"
