@@ -21,8 +21,8 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 | [huggingface.co/mcp] | [![][huggingface-badge]][huggingface-url] |
 
 [huggingface.co/mcp]: https://huggingface.co/mcp
-[huggingface-badge]: https://github.com/algomaster99/mcp-drift/actions/workflows/hf.yml/badge.svg?event=schedule
-[huggingface-url]: https://github.com/algomaster99/mcp-drift/actions/workflows/hf.yml
+[huggingface-badge]: https://github.com/algomaster99/mcp-drift/actions/workflows/huggingface.yml/badge.svg?event=schedule
+[huggingface-url]: https://github.com/algomaster99/mcp-drift/actions/workflows/huggingface.yml
 
 ## How It Works
 
