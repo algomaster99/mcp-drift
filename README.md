@@ -39,3 +39,10 @@ SESSION=$(./mcp-drift initialize https://huggingface.co/mcp)
 ./mcp-drift tools-list --session "$SESSION" https://huggingface.co/mcp \
   > snapshots/tools/huggingface.json
 ```
+
+## Related Work
+
+https://github.com/mcptrust/mcptrust: This implements a lockfile for MCP servers.
+The lockfile consists of SHA256 hashes of the tool list.
+The integrations enable the client to check the lockfile and abort if the hash has changed
+(due to an unknown tool in MCP server).
