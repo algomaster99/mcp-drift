@@ -106,8 +106,8 @@ func runToolsList(args []string) {
 	fs.Var(&headers, "header", "extra request header in Name:Value format (repeatable)")
 	fs.Parse(args)
 
-	if fs.NArg() < 1 || *session == "" {
-		fmt.Fprintln(os.Stderr, "usage: mcp-drift tools-list --session ID [--header Name:Value] <url>")
+	if fs.NArg() < 1 {
+		fmt.Fprintln(os.Stderr, "usage: mcp-drift tools-list [--session ID] [--header Name:Value] <url>")
 		os.Exit(2)
 	}
 
@@ -117,7 +117,9 @@ func runToolsList(args []string) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json, text/event-stream")
-	req.Header.Set("mcp-session-id", *session)
+	if *session != "" {
+		req.Header.Set("mcp-session-id", *session)
+	}
 	applyHeaders(req, headers)
 
 	resp, err := httpClient.Do(req)
