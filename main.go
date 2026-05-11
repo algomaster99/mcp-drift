@@ -34,18 +34,6 @@ const toolsBody = `{
 
 var httpClient = &http.Client{Timeout: 30 * time.Second}
 
-// headerFlag is a repeatable -header flag that accumulates Name:Value pairs.
-type headerFlag []string
-
-func (h *headerFlag) String() string { return strings.Join(*h, ", ") }
-func (h *headerFlag) Set(v string) error {
-	if !strings.Contains(v, ":") {
-		return fmt.Errorf("header must be in Name:Value format")
-	}
-	*h = append(*h, v)
-	return nil
-}
-
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Fprintln(os.Stderr, "usage: mcp-drift <initialize|tools-list> [flags] <url>")
@@ -64,12 +52,10 @@ func main() {
 
 func runInitialize(args []string) {
 	fs := flag.NewFlagSet("initialize", flag.ExitOnError)
-	var headers headerFlag
-	fs.Var(&headers, "header", "extra request header in Name:Value format (repeatable)")
 	fs.Parse(args)
 
 	if fs.NArg() < 1 {
-		fmt.Fprintln(os.Stderr, "usage: mcp-drift initialize [--header Name:Value] <url>")
+		fmt.Fprintln(os.Stderr, "usage: mcp-drift initialize <url>")
 		os.Exit(2)
 	}
 
@@ -78,7 +64,6 @@ func runInitialize(args []string) {
 		fatal("build request: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	applyHeaders(req, headers)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -96,12 +81,10 @@ func runInitialize(args []string) {
 func runToolsList(args []string) {
 	fs := flag.NewFlagSet("tools-list", flag.ExitOnError)
 	session := fs.String("session", "", "mcp-session-id from initialize (omit for stateless servers)")
-	var headers headerFlag
-	fs.Var(&headers, "header", "extra request header in Name:Value format (repeatable)")
 	fs.Parse(args)
 
 	if fs.NArg() < 1 {
-		fmt.Fprintln(os.Stderr, "usage: mcp-drift tools-list [--session ID] [--header Name:Value] <url>")
+		fmt.Fprintln(os.Stderr, "usage: mcp-drift tools-list [--session ID] <url>")
 		os.Exit(2)
 	}
 
@@ -114,7 +97,6 @@ func runToolsList(args []string) {
 	if *session != "" {
 		req.Header.Set("mcp-session-id", *session)
 	}
-	applyHeaders(req, headers)
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -143,13 +125,6 @@ func runToolsList(args []string) {
 
 	out, _ := json.MarshalIndent(tools, "", "  ")
 	fmt.Println(string(out))
-}
-
-func applyHeaders(req *http.Request, headers headerFlag) {
-	for _, h := range headers {
-		parts := strings.SplitN(h, ":", 2)
-		req.Header.Set(strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1]))
-	}
 }
 
 func fatal(format string, a ...any) {
