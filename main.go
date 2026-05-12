@@ -80,11 +80,11 @@ func runInitialize(args []string) {
 
 func runToolsList(args []string) {
 	fs := flag.NewFlagSet("tools-list", flag.ExitOnError)
-	session := fs.String("session", "", "mcp-session-id from initialize")
+	session := fs.String("session", "", "mcp-session-id from initialize (omit for stateless servers)")
 	fs.Parse(args)
 
-	if fs.NArg() < 1 || *session == "" {
-		fmt.Fprintln(os.Stderr, "usage: mcp-drift tools-list --session ID <url>")
+	if fs.NArg() < 1 {
+		fmt.Fprintln(os.Stderr, "usage: mcp-drift tools-list [--session ID] <url>")
 		os.Exit(2)
 	}
 
@@ -94,7 +94,9 @@ func runToolsList(args []string) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json, text/event-stream")
-	req.Header.Set("mcp-session-id", *session)
+	if *session != "" {
+		req.Header.Set("mcp-session-id", *session)
+	}
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -102,7 +104,6 @@ func runToolsList(args []string) {
 	}
 	defer resp.Body.Close()
 
-	// Decode the full response as a generic JSON tree.
 	var raw map[string]json.RawMessage
 	if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
 		fatal("decode response: %v", err)
