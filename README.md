@@ -19,25 +19,41 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 | Server | Status |
 | ------ | ------ |
 | [huggingface.co/mcp] | [![][huggingface-badge]][huggingface-url] |
+| [developerknowledge.googleapis.com/mcp] | [![][google-dk-badge]][google-dk-url] |
 
 [huggingface.co/mcp]: https://huggingface.co/mcp
 [huggingface-badge]: https://github.com/algomaster99/mcp-drift/actions/workflows/huggingface.yml/badge.svg?event=schedule
 [huggingface-url]: https://github.com/algomaster99/mcp-drift/actions/workflows/huggingface.yml
 
+[developerknowledge.googleapis.com/mcp]: https://developerknowledge.googleapis.com/mcp
+[google-dk-badge]: https://github.com/algomaster99/mcp-drift/actions/workflows/google-developerknowlege.yml/badge.svg?event=schedule
+[google-dk-url]: https://github.com/algomaster99/mcp-drift/actions/workflows/google-developerknowlege.yml
+
 ## How It Works
 
 1. A GitHub Actions workflow runs daily for each server.
-2. It calls the MCP `initialize` endpoint to get a session, then fetches `tools/list`.
+2. For stateful servers it calls `initialize` to get a session, then fetches `tools/list`.
+   For stateless servers (e.g. Google APIs) it fetches `tools/list` directly — no session needed.
 3. The result is diffed against `snapshots/tools/<server>.json`.
 4. If anything changed, a PR is opened with the diff in the description.
 
-The first snapshot for each server is bootstrapped locally:
+The first snapshot for each server is bootstrapped locally.
+
+Stateful server (HuggingFace):
 
 ```sh
 go build -o mcp-drift .
 SESSION=$(./mcp-drift initialize https://huggingface.co/mcp)
 ./mcp-drift tools-list --session "$SESSION" https://huggingface.co/mcp \
   > snapshots/tools/huggingface.json
+```
+
+Stateless server (Google Developer Knowledge):
+
+```sh
+go build -o mcp-drift .
+./mcp-drift tools-list https://developerknowledge.googleapis.com/mcp \
+  > snapshots/tools/google-developerknowledge.json
 ```
 
 ## Related Work
