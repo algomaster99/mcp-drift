@@ -26,8 +26,8 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 [huggingface-url]: https://github.com/algomaster99/mcp-drift/actions/workflows/huggingface.yml
 
 [developerknowledge.googleapis.com/mcp]: https://developerknowledge.googleapis.com/mcp
-[google-dk-badge]: https://github.com/algomaster99/mcp-drift/actions/workflows/google-developerknowlege.yml/badge.svg?event=schedule
-[google-dk-url]: https://github.com/algomaster99/mcp-drift/actions/workflows/google-developerknowlege.yml
+[google-dk-badge]: https://github.com/algomaster99/mcp-drift/actions/workflows/google-developerknowledge.yml/badge.svg?event=schedule
+[google-dk-url]: https://github.com/algomaster99/mcp-drift/actions/workflows/google-developerknowledge.yml
 
 ## How It Works
 
