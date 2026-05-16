@@ -84,7 +84,14 @@ jobs:
           cp live/tools.json snapshots/tools/huggingface.json
           cp live/prompts.json snapshots/prompts/huggingface.json
           cp live/resources.json snapshots/resources/huggingface.json
-          git add snapshots/tools/huggingface.json snapshots/prompts/huggingface.json snapshots/resources/huggingface.json
+          changed_lists=()
+          for list in tools prompts resources; do
+            if ! git diff --quiet -- "snapshots/$list/huggingface.json"; then
+              changed_lists+=("$list")
+            fi
+          done
+          python3 .github/scripts/bump_readme_counts.py README.md "[huggingface.co/mcp]" "${changed_lists[@]}"
+          git add README.md snapshots/tools/huggingface.json snapshots/prompts/huggingface.json snapshots/resources/huggingface.json
           git commit -m "drift: huggingface MCP lists changed $(date +%Y-%m-%d)"
           git push origin "$BRANCH"
           gh pr create \

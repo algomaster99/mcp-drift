@@ -80,7 +80,14 @@ jobs:
           cp live/tools.json snapshots/tools/google-developerknowledge.json
           cp live/prompts.json snapshots/prompts/google-developerknowledge.json
           cp live/resources.json snapshots/resources/google-developerknowledge.json
-          git add snapshots/tools/google-developerknowledge.json snapshots/prompts/google-developerknowledge.json snapshots/resources/google-developerknowledge.json
+          changed_lists=()
+          for list in tools prompts resources; do
+            if ! git diff --quiet -- "snapshots/$list/google-developerknowledge.json"; then
+              changed_lists+=("$list")
+            fi
+          done
+          python3 .github/scripts/bump_readme_counts.py README.md "[developerknowledge.googleapis.com/mcp]" "${changed_lists[@]}"
+          git add README.md snapshots/tools/google-developerknowledge.json snapshots/prompts/google-developerknowledge.json snapshots/resources/google-developerknowledge.json
           git commit -m "drift: google-developerknowledge MCP lists changed $(date +%Y-%m-%d)"
           git push origin "$BRANCH"
           gh pr create \
