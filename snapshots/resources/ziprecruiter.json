@@ -1,0 +1,8 @@
+[
+  {
+    "uri": "ui://widgets/job-carousel",
+    "name": "job-carousel-widget",
+    "mimeType": "text/html;profile=mcp-app",
+    "description": "Interactive carousel widget displaying job search results"
+  }
+]
