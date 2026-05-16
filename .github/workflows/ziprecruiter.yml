@@ -55,13 +55,11 @@ jobs:
             [ -n "$MCP_SESSION" ] && args+=(--session "$MCP_SESSION")
 
             if ./mcp-drift "$command" "${args[@]}" "$MCP_URL" > "$output" 2>error.log; then
-              [ "$(tr -d '[:space:]' < "$output")" = "null" ] && printf '[]
-' > "$output"
+              [ "$(tr -d '[:space:]' < "$output")" = "null" ] && printf '[]\n' > "$output"
               return
             fi
             if grep -qiE 'Method not found|Method not supported|404' error.log; then
-              printf '[]
-' > "$output"; return
+              printf '[]\n' > "$output"; return
             fi
 
             printf 'null' > "$output"
