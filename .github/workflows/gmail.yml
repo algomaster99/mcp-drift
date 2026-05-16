@@ -1,8 +1,8 @@
-name: Google Developer Knowledge MCP Lists
+name: Gmail MCP Lists
 
 on:
   schedule:
-    - cron: '0 4 * * *'
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 permissions:
@@ -10,7 +10,7 @@ permissions:
   pull-requests: write
 
 env:
-  MCP_URL: https://developerknowledge.googleapis.com/mcp
+  MCP_URL: https://gmailmcp.googleapis.com/mcp/v1
 
 jobs:
   check:
@@ -55,11 +55,13 @@ jobs:
             [ -n "$MCP_SESSION" ] && args+=(--session "$MCP_SESSION")
 
             if ./mcp-drift "$command" "${args[@]}" "$MCP_URL" > "$output" 2>error.log; then
-              [ "$(tr -d '[:space:]' < "$output")" = "null" ] && printf '[]\n' > "$output"
+              [ "$(tr -d '[:space:]' < "$output")" = "null" ] && printf '[]
+' > "$output"
               return
             fi
             if grep -qiE 'Method not found|Method not supported|404' error.log; then
-              printf '[]\n' > "$output"; return
+              printf '[]
+' > "$output"; return
             fi
 
             printf 'null' > "$output"
@@ -74,7 +76,7 @@ jobs:
         run: |
           drifted=false
           for list in tools prompts resources; do
-            if ! diff -q "snapshots/$list/google-developerknowledge.json" "live/$list.json" > /dev/null 2>&1; then
+            if ! diff -q "snapshots/$list/gmail.json" "live/$list.json" > /dev/null 2>&1; then
               echo "Drift detected in $list/list."
               drifted=true
             fi
@@ -86,25 +88,26 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BRANCH="drift/google-developerknowledge-$(date +%Y-%m-%d)"
+          BRANCH="drift/gmail-$(date +%Y-%m-%d)"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           git checkout -b "$BRANCH"
-          cp live/tools.json snapshots/tools/google-developerknowledge.json
-          cp live/prompts.json snapshots/prompts/google-developerknowledge.json
-          cp live/resources.json snapshots/resources/google-developerknowledge.json
+          cp live/tools.json snapshots/tools/gmail.json
+          cp live/prompts.json snapshots/prompts/gmail.json
+          cp live/resources.json snapshots/resources/gmail.json
           changed_lists=()
           for list in tools prompts resources; do
-            if ! git diff --quiet -- "snapshots/$list/google-developerknowledge.json"; then
+            if ! git diff --quiet -- "snapshots/$list/gmail.json"; then
               changed_lists+=("$list")
             fi
           done
-          python3 .github/scripts/bump_readme_counts.py README.md "[developerknowledge.googleapis.com/mcp]" "${changed_lists[@]}"
-          git add README.md snapshots/tools/google-developerknowledge.json snapshots/prompts/google-developerknowledge.json snapshots/resources/google-developerknowledge.json
-          git commit -m "drift: google-developerknowledge MCP lists changed $(date +%Y-%m-%d)"
+          python3 .github/scripts/bump_readme_counts.py README.md "[gmailmcp.googleapis.com/mcp/v1]" "${changed_lists[@]}"
+          git add README.md snapshots/tools/gmail.json snapshots/prompts/gmail.json snapshots/resources/gmail.json
+          git commit -m "drift: gmail MCP lists changed $(date +%Y-%m-%d)"
           git push origin "$BRANCH"
           gh pr create \
-            --title "drift: google-developerknowledge MCP lists changed ($(date +%Y-%m-%d))" \
+            --title "drift: gmail MCP lists changed ($(date +%Y-%m-%d))" \
             --body "One or more MCP lists at $MCP_URL changed. Review the snapshot diff in the files changed tab." \
             --base main \
             --head "$BRANCH"
+

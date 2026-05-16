@@ -39,6 +39,9 @@ def bump_counts(readme: Path, server_cell: str, changed_lists: list[str]) -> Non
 
         for changed_list in changed_lists:
             column = LIST_COLUMNS[changed_list]
+            if cells[column] in ("?", "✗"):
+                # Auth-gated (?) or not supported (✗) — leave marker, don't count
+                continue
             try:
                 cells[column] = str(int(cells[column]) + 1)
             except ValueError as exc:

@@ -26,50 +26,59 @@ jobs:
       - name: Build
         run: go build -o mcp-drift .
 
-      - name: Initialize — get mcp-session-id
+      - name: Initialize — read capabilities and session
         run: |
-          echo "MCP_SESSION=$(./mcp-drift initialize "$MCP_URL")" >> $GITHUB_ENV
+          if CAPS=$(./mcp-drift initialize "$MCP_URL" 2>/dev/null); then
+            echo "MCP_SESSION=$(echo "$CAPS"   | python3 -c "import json,sys; print(json.load(sys.stdin)['session'])")"   >> $GITHUB_ENV
+            echo "HAS_TOOLS=$(echo "$CAPS"     | python3 -c "import json,sys; print('true' if json.load(sys.stdin)['tools'] else 'false')")"     >> $GITHUB_ENV
+            echo "HAS_PROMPTS=$(echo "$CAPS"   | python3 -c "import json,sys; print('true' if json.load(sys.stdin)['prompts'] else 'false')")"   >> $GITHUB_ENV
+            echo "HAS_RESOURCES=$(echo "$CAPS" | python3 -c "import json,sys; print('true' if json.load(sys.stdin)['resources'] else 'false')")" >> $GITHUB_ENV
+          else
+            echo "MCP_SESSION="      >> $GITHUB_ENV
+            echo "HAS_TOOLS=unknown"     >> $GITHUB_ENV
+            echo "HAS_PROMPTS=unknown"   >> $GITHUB_ENV
+            echo "HAS_RESOURCES=unknown" >> $GITHUB_ENV
+          fi
 
       - name: Fetch MCP lists
         run: |
           mkdir -p live
 
-          fetch_list() {
-            local command="$1"
-            local output="$2"
+          fetch_or_mark() {
+            local flag="$1" command="$2" output="$3"
 
-            if ./mcp-drift "$command" --session "$MCP_SESSION" "$MCP_URL" > "$output" 2> error.log; then
-              if [ "$(tr -d '[:space:]' < "$output")" = "null" ]; then
-                printf '[]\n' > "$output"
-              fi
-              return
+            if [ "$flag" = "false" ]; then
+              printf 'false' > "$output"; return
             fi
 
-            if grep -qiE 'Method not found|Method not supported' error.log; then
-              printf '[]\n' > "$output"
+            local args=()
+            [ -n "$MCP_SESSION" ] && args+=(--session "$MCP_SESSION")
+
+            if ./mcp-drift "$command" "${args[@]}" "$MCP_URL" > "$output" 2>error.log; then
+              [ "$(tr -d '[:space:]' < "$output")" = "null" ] && printf '[]\n' > "$output"
               return
             fi
+            if grep -qiE 'Method not found|Method not supported|404' error.log; then
+              printf '[]\n' > "$output"; return
+            fi
 
-            cat error.log >&2
-            exit 1
+            printf 'null' > "$output"
           }
 
-          fetch_list tools-list live/tools.json
-          fetch_list prompts-list live/prompts.json
-          fetch_list resources-list live/resources.json
+          fetch_or_mark "$HAS_TOOLS"     tools-list     live/tools.json
+          fetch_or_mark "$HAS_PROMPTS"   prompts-list   live/prompts.json
+          fetch_or_mark "$HAS_RESOURCES" resources-list live/resources.json
 
       - name: Compare to snapshot
         id: diff
         run: |
           drifted=false
-
           for list in tools prompts resources; do
             if ! diff -q "snapshots/$list/huggingface.json" "live/$list.json" > /dev/null 2>&1; then
               echo "Drift detected in $list/list."
               drifted=true
             fi
           done
-
           echo "drifted=$drifted" >> $GITHUB_OUTPUT
 
       - name: Open PR with updated snapshot

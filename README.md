@@ -18,15 +18,37 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 
 | Server | `tools/list` | `prompts/list` | `resources/list` |
 | ------ | ------------ | -------------- | ---------------- |
-| [huggingface.co/mcp] | 2 | 0 | 0 |
-| [developerknowledge.googleapis.com/mcp] | 1 | 0 | 0 |
+| [huggingface.co/mcp] | 2 | 0 | ✗ |
+| [developerknowledge.googleapis.com/mcp] | 1 | 0 | ✗ |
+| [gmailmcp.googleapis.com/mcp/v1] | 0 | 0 | ✗ |
+| [drivemcp.googleapis.com/mcp/v1] | 0 | 0 | ✗ |
+| [calendarmcp.googleapis.com/mcp/v1] | 0 | 0 | ✗ |
+| [mcp.canva.com/mcp] | ? | ? | ? |
+| [mcp.na1.ironcladapp.com/mcp] | ? | ? | ? |
+| [microsoft365.mcp.claude.com/mcp] | ? | ? | ? |
+| [mcp.figma.com/mcp] | ? | ? | ? |
+| [mcp.notion.com/mcp] | ? | ? | ? |
+| [mcp.atlassian.com/v1/mcp] | ? | ? | ? |
+| [web-api.us.netdocuments.app/connect/mcp] | ? | ? | ? |
 
 [huggingface.co/mcp]: https://huggingface.co/mcp
-
 [developerknowledge.googleapis.com/mcp]: https://developerknowledge.googleapis.com/mcp
+[gmailmcp.googleapis.com/mcp/v1]: https://gmailmcp.googleapis.com/mcp/v1
+[drivemcp.googleapis.com/mcp/v1]: https://drivemcp.googleapis.com/mcp/v1
+[calendarmcp.googleapis.com/mcp/v1]: https://calendarmcp.googleapis.com/mcp/v1
+[mcp.canva.com/mcp]: https://mcp.canva.com/mcp
+[mcp.na1.ironcladapp.com/mcp]: https://mcp.na1.ironcladapp.com/mcp
+[microsoft365.mcp.claude.com/mcp]: https://microsoft365.mcp.claude.com/mcp
+[mcp.figma.com/mcp]: https://mcp.figma.com/mcp
+[mcp.notion.com/mcp]: https://mcp.notion.com/mcp
+[mcp.atlassian.com/v1/mcp]: https://mcp.atlassian.com/v1/mcp
+[web-api.us.netdocuments.app/connect/mcp]: https://web-api.us.netdocuments.app/connect/mcp
 
 The counts are the number of recorded drift updates for each snapshot file. Newly
 monitored files start at zero.
+
+- `✗` — server declared this capability absent in its `initialize` response; snapshot stores `false`
+- `?` — server requires authentication; `initialize` returned 401 so capabilities are unknown; snapshot stores `null`
 
 ## How It Works
 

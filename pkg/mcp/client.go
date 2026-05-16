@@ -42,6 +42,14 @@ type RPCError struct {
 	Data    json.RawMessage `json:"data,omitempty"`
 }
 
+// ServerCapabilities reflects which MCP list methods the server advertises.
+type ServerCapabilities struct {
+	Session   string `json:"session"`
+	Tools     bool   `json:"tools"`
+	Prompts   bool   `json:"prompts"`
+	Resources bool   `json:"resources"`
+}
+
 type listResult struct {
 	Items      []json.RawMessage
 	NextCursor string
@@ -51,7 +59,9 @@ func NewClient() *Client {
 	return &Client{httpClient: &http.Client{Timeout: 30 * time.Second}}
 }
 
-func (c *Client) Initialize(ctx context.Context, url string) (string, error) {
+// Initialize calls the MCP initialize method and returns the server's advertised
+// capabilities. Session is empty for stateless servers (no mcp-session-id header).
+func (c *Client) Initialize(ctx context.Context, url string) (*ServerCapabilities, error) {
 	body := rpcRequest{
 		JSONRPC: "2.0",
 		ID:      "1",
@@ -68,21 +78,38 @@ func (c *Client) Initialize(ctx context.Context, url string) (string, error) {
 
 	resp, err := c.post(ctx, url, "", body)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		responseBody, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
-		return "", fmt.Errorf("http status %d: %s", resp.StatusCode, bytes.TrimSpace(responseBody))
+		return nil, fmt.Errorf("http status %d: %s", resp.StatusCode, bytes.TrimSpace(responseBody))
 	}
 
-	session := resp.Header.Get("mcp-session-id")
-	if session == "" {
-		return "", fmt.Errorf("no mcp-session-id in response headers (status %d)", resp.StatusCode)
+	var raw rpcResponse
+	if err := json.NewDecoder(resp.Body).Decode(&raw); err != nil {
+		return nil, fmt.Errorf("decode initialize response: %w", err)
+	}
+	if len(raw.Error) > 0 && string(raw.Error) != "null" {
+		return nil, decodeRPCError(raw.Error)
 	}
 
-	return session, nil
+	// Parse capabilities from the result body.
+	var result struct {
+		Capabilities map[string]json.RawMessage `json:"capabilities"`
+	}
+	if err := json.Unmarshal(raw.Result, &result); err != nil {
+		return nil, fmt.Errorf("decode initialize result: %w", err)
+	}
+
+	caps := &ServerCapabilities{
+		Session:   resp.Header.Get("mcp-session-id"),
+		Tools:     result.Capabilities["tools"] != nil,
+		Prompts:   result.Capabilities["prompts"] != nil,
+		Resources: result.Capabilities["resources"] != nil,
+	}
+	return caps, nil
 }
 
 func (c *Client) ListAll(ctx context.Context, url, session, method, resultKey string) ([]json.RawMessage, error) {

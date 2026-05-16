@@ -40,12 +40,13 @@ func runInitialize(args []string) {
 		os.Exit(2)
 	}
 
-	client := mcp.NewClient()
-	session, err := client.Initialize(context.Background(), fs.Arg(0))
+	caps, err := mcp.NewClient().Initialize(context.Background(), fs.Arg(0))
 	if err != nil {
 		fatal("initialize: %v", err)
 	}
-	fmt.Print(session)
+
+	out, _ := json.Marshal(caps)
+	fmt.Println(string(out))
 }
 
 func runList(name string, list lists.List, args []string) {
