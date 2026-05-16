@@ -32,8 +32,8 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 ## How It Works
 
 1. A GitHub Actions workflow runs daily for each server.
-2. For stateful servers it calls `initialize` to get a session, then fetches `tools/list`.
-   For stateless servers (e.g. Google APIs) it fetches `tools/list` directly — no session needed.
+2. For stateful servers it calls `initialize` to get a session, then fetches the selected MCP list.
+   For stateless servers (e.g. Google APIs) it fetches the list directly — no session needed.
 3. The result is diffed against `snapshots/tools/<server>.json`.
 4. If anything changed, a PR is opened with the diff in the description.
 
@@ -54,6 +54,13 @@ Stateless server (Google Developer Knowledge):
 go build -o mcp-drift .
 ./mcp-drift tools-list https://developerknowledge.googleapis.com/mcp \
   > snapshots/tools/google-developerknowledge.json
+```
+
+Other list endpoints:
+
+```sh
+./mcp-drift resources-list [--session "$SESSION"] <mcp-url>
+./mcp-drift prompts-list [--session "$SESSION"] <mcp-url>
 ```
 
 ## Related Work
