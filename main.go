@@ -60,7 +60,11 @@ func runList(name string, list lists.List, args []string) {
 
 	items, err := list.Fetch(context.Background(), mcp.NewClient(), fs.Arg(0), *session)
 	if err != nil {
-		fatal("%s: %v", list.Method, err)
+		if list.AllowUnsupported && mcp.IsMethodUnsupported(err) {
+			items = []json.RawMessage{}
+		} else {
+			fatal("%s: %v", list.Method, err)
+		}
 	}
 
 	out, _ := json.MarshalIndent(items, "", "  ")

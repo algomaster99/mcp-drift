@@ -1,4 +1,4 @@
-name: Google Developer Knowledge MCP (Tools List)
+name: Google Developer Knowledge MCP Lists
 
 on:
   schedule:
@@ -26,20 +26,47 @@ jobs:
       - name: Build
         run: go build -o mcp-drift .
 
-      - name: Fetch tools/list (stateless — no session required)
+      - name: Fetch MCP lists (stateless — no session required)
         run: |
-          ./mcp-drift tools-list "$MCP_URL" > live.json
+          mkdir -p live
+
+          fetch_list() {
+            local command="$1"
+            local output="$2"
+
+            if ./mcp-drift "$command" "$MCP_URL" > "$output" 2> error.log; then
+              if [ "$(tr -d '[:space:]' < "$output")" = "null" ]; then
+                printf '[]\n' > "$output"
+              fi
+              return
+            fi
+
+            if grep -qiE 'Method not found|Method not supported' error.log; then
+              printf '[]\n' > "$output"
+              return
+            fi
+
+            cat error.log >&2
+            exit 1
+          }
+
+          fetch_list tools-list live/tools.json
+          fetch_list prompts-list live/prompts.json
+          fetch_list resources-list live/resources.json
 
       - name: Compare to snapshot
         id: diff
         run: |
-          if diff -q snapshots/tools/google-developerknowledge.json live.json > /dev/null 2>&1; then
-            echo "No drift detected."
-            echo "drifted=false" >> $GITHUB_OUTPUT
-          else
-            echo "Drift detected!"
-            echo "drifted=true" >> $GITHUB_OUTPUT
-          fi
+          drifted=false
+
+          for list in tools prompts resources; do
+            if ! diff -q "snapshots/$list/google-developerknowledge.json" "live/$list.json" > /dev/null 2>&1; then
+              echo "Drift detected in $list/list."
+              drifted=true
+            fi
+          done
+
+          echo "drifted=$drifted" >> $GITHUB_OUTPUT
 
       - name: Open PR with updated snapshot
         if: steps.diff.outputs.drifted == 'true'
@@ -50,12 +77,14 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           git checkout -b "$BRANCH"
-          cp live.json snapshots/tools/google-developerknowledge.json
-          git add snapshots/tools/google-developerknowledge.json
-          git commit -m "drift: google-developerknowledge tools/list changed $(date +%Y-%m-%d)"
+          cp live/tools.json snapshots/tools/google-developerknowledge.json
+          cp live/prompts.json snapshots/prompts/google-developerknowledge.json
+          cp live/resources.json snapshots/resources/google-developerknowledge.json
+          git add snapshots/tools/google-developerknowledge.json snapshots/prompts/google-developerknowledge.json snapshots/resources/google-developerknowledge.json
+          git commit -m "drift: google-developerknowledge MCP lists changed $(date +%Y-%m-%d)"
           git push origin "$BRANCH"
           gh pr create \
-            --title "drift: google-developerknowledge tools/list changed ($(date +%Y-%m-%d))" \
-            --body "The tool list at $MCP_URL has changed. Review the snapshot diff in the files changed tab." \
+            --title "drift: google-developerknowledge MCP lists changed ($(date +%Y-%m-%d))" \
+            --body "One or more MCP lists at $MCP_URL changed. Review the snapshot diff in the files changed tab." \
             --base main \
             --head "$BRANCH"

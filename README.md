@@ -1,7 +1,7 @@
 # mcp-drift
 
 **mcp-drift** detects silent changes by polling public MCP servers daily and diffing
-against a committed snapshot. If the tool list changes, it opens a pull request with the
+against committed snapshots. If an MCP list changes, it opens a pull request with the
 diff so the change is on record and reviewable.
 
 ## Why?
@@ -16,25 +16,25 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 
 ## Monitored Servers
 
-| Server | Status |
-| ------ | ------ |
-| [huggingface.co/mcp] | [![][huggingface-badge]][huggingface-url] |
-| [developerknowledge.googleapis.com/mcp] | [![][google-dk-badge]][google-dk-url] |
+| Server | `tools/list` | `prompts/list` | `resources/list` |
+| ------ | ------------ | -------------- | ---------------- |
+| [huggingface.co/mcp] | 2 | 0 | 0 |
+| [developerknowledge.googleapis.com/mcp] | 1 | 0 | 0 |
 
 [huggingface.co/mcp]: https://huggingface.co/mcp
-[huggingface-badge]: https://github.com/algomaster99/mcp-drift/actions/workflows/huggingface.yml/badge.svg?event=schedule
-[huggingface-url]: https://github.com/algomaster99/mcp-drift/actions/workflows/huggingface.yml
 
 [developerknowledge.googleapis.com/mcp]: https://developerknowledge.googleapis.com/mcp
-[google-dk-badge]: https://github.com/algomaster99/mcp-drift/actions/workflows/google-developerknowledge.yml/badge.svg?event=schedule
-[google-dk-url]: https://github.com/algomaster99/mcp-drift/actions/workflows/google-developerknowledge.yml
+
+The counts are the number of recorded drift updates for each snapshot file. Newly
+monitored files start at zero.
 
 ## How It Works
 
 1. A GitHub Actions workflow runs daily for each server.
-2. For stateful servers it calls `initialize` to get a session, then fetches the selected MCP list.
-   For stateless servers (e.g. Google APIs) it fetches the list directly — no session needed.
-3. The result is diffed against `snapshots/tools/<server>.json`.
+2. For stateful servers it calls `initialize` to get a session, then fetches `tools/list`,
+   `prompts/list`, and `resources/list`. For stateless servers (e.g. Google APIs) it
+   fetches the lists directly — no session needed.
+3. The results are diffed against `snapshots/<list>/<server>.json`.
 4. If anything changed, a PR is opened with the diff in the description.
 
 The first snapshot for each server is bootstrapped locally.
@@ -46,6 +46,10 @@ go build -o mcp-drift .
 SESSION=$(./mcp-drift initialize https://huggingface.co/mcp)
 ./mcp-drift tools-list --session "$SESSION" https://huggingface.co/mcp \
   > snapshots/tools/huggingface.json
+./mcp-drift prompts-list --session "$SESSION" https://huggingface.co/mcp \
+  > snapshots/prompts/huggingface.json
+./mcp-drift resources-list --session "$SESSION" https://huggingface.co/mcp \
+  > snapshots/resources/huggingface.json
 ```
 
 Stateless server (Google Developer Knowledge):
@@ -54,13 +58,10 @@ Stateless server (Google Developer Knowledge):
 go build -o mcp-drift .
 ./mcp-drift tools-list https://developerknowledge.googleapis.com/mcp \
   > snapshots/tools/google-developerknowledge.json
-```
-
-Other list endpoints:
-
-```sh
-./mcp-drift resources-list [--session "$SESSION"] <mcp-url>
-./mcp-drift prompts-list [--session "$SESSION"] <mcp-url>
+./mcp-drift prompts-list https://developerknowledge.googleapis.com/mcp \
+  > snapshots/prompts/google-developerknowledge.json
+./mcp-drift resources-list https://developerknowledge.googleapis.com/mcp \
+  > snapshots/resources/google-developerknowledge.json
 ```
 
 ## Related Work

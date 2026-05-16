@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -34,7 +36,7 @@ type rpcResponse struct {
 	Error   json.RawMessage `json:"error"`
 }
 
-type rpcError struct {
+type RPCError struct {
 	Code    int             `json:"code"`
 	Message string          `json:"message"`
 	Data    json.RawMessage `json:"data,omitempty"`
@@ -84,7 +86,7 @@ func (c *Client) Initialize(ctx context.Context, url string) (string, error) {
 }
 
 func (c *Client) ListAll(ctx context.Context, url, session, method, resultKey string) ([]json.RawMessage, error) {
-	var all []json.RawMessage
+	all := []json.RawMessage{}
 	var cursor string
 
 	for page := 1; ; page++ {
@@ -142,6 +144,9 @@ func (c *Client) listPage(ctx context.Context, url, session, method, resultKey, 
 	if err := json.Unmarshal(result[resultKey], &items); err != nil {
 		return listResult{}, fmt.Errorf("decode %s: %w", resultKey, err)
 	}
+	if items == nil {
+		items = []json.RawMessage{}
+	}
 
 	var nextCursor string
 	if rawCursor, ok := result["nextCursor"]; ok {
@@ -172,13 +177,27 @@ func (c *Client) post(ctx context.Context, url, session string, body rpcRequest)
 	return c.httpClient.Do(req)
 }
 
+func (e *RPCError) Error() string {
+	if len(e.Data) > 0 {
+		return fmt.Sprintf("rpc error %d: %s: %s", e.Code, e.Message, e.Data)
+	}
+	return fmt.Sprintf("rpc error %d: %s", e.Code, e.Message)
+}
+
+func IsMethodUnsupported(err error) bool {
+	var rpcErr *RPCError
+	if !errors.As(err, &rpcErr) {
+		return false
+	}
+
+	message := strings.ToLower(rpcErr.Message)
+	return rpcErr.Code == -32601 || strings.Contains(message, "method not found") || strings.Contains(message, "method not supported")
+}
+
 func decodeRPCError(raw json.RawMessage) error {
-	var rpcErr rpcError
+	var rpcErr RPCError
 	if err := json.Unmarshal(raw, &rpcErr); err != nil || rpcErr.Message == "" {
 		return fmt.Errorf("rpc error: %s", raw)
 	}
-	if len(rpcErr.Data) > 0 {
-		return fmt.Errorf("rpc error %d: %s: %s", rpcErr.Code, rpcErr.Message, rpcErr.Data)
-	}
-	return fmt.Errorf("rpc error %d: %s", rpcErr.Code, rpcErr.Message)
+	return &rpcErr
 }
