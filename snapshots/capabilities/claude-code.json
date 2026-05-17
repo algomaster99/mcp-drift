@@ -15,45 +15,11 @@
   ],
   "subprocesses": [
     {
-      "cmd": "/tmp/ext/extension/resources/native-binary/claude",
+      "cmd": "ext/extension/resources/native-binary/claude",
       "args": [
-        "/tmp/ext/extension/resources/native-binary/claude",
+        "ext/extension/resources/native-binary/claude",
         "mcp",
         "serve"
-      ]
-    },
-    {
-      "cmd": "/usr/bin/sh",
-      "args": [
-        "sh",
-        "-c",
-        "currentpid=59811; for i in $(seq 1 10); do cmd=$(ps -o command= -p $currentpid 2>/dev/null); if [ -n \\"
-      ]
-    },
-    {
-      "cmd": "/usr/bin/seq",
-      "args": [
-        "seq",
-        "1",
-        "10"
-      ]
-    },
-    {
-      "cmd": "/usr/bin/ps",
-      "args": [
-        "ps",
-        "-o",
-        "command=",
-        "-p",
-        "59811"
-      ]
-    },
-    {
-      "cmd": "/usr/bin/tr",
-      "args": [
-        "tr",
-        "-d",
-        " "
       ]
     }
   ]
