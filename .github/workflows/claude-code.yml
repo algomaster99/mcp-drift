@@ -38,7 +38,7 @@ jobs:
       - name: Scan MCP server
         run: |
           mkdir -p live
-          ./mcp-drift stdio-scan \
+          ./mcp-drift stdio-scan -strace-log live/strace.log \
             ext/extension/resources/native-binary/claude mcp serve \
             > live/snapshot.json 2>error.log
 
@@ -59,6 +59,14 @@ jobs:
 
           print(f"tools={len(d['tools'])} prompts={len(d['prompts'])} resources={len(d['resources'])} network={len(d['network'])} subprocesses={len(d['subprocesses'])}")
           PYEOF
+
+      - name: Upload strace log
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: strace-log
+          path: live/strace.log
+          if-no-files-found: warn
+          archive: false
 
       - name: Compare to snapshots
         id: diff

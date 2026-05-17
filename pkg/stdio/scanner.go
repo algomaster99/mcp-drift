@@ -36,14 +36,21 @@ type mcpClient struct {
 
 // Scan runs cmdArgs under strace (if available), speaks MCP over stdio, and
 // returns tools/prompts/resources lists alongside observed network and subprocess calls.
-func Scan(ctx context.Context, cmdArgs []string) (*ScanResult, error) {
+// If saveStraceTo is non-empty, the raw strace log is copied there before deletion.
+func Scan(ctx context.Context, cmdArgs []string, saveStraceTo string) (*ScanResult, error) {
 	straceLog, err := os.CreateTemp("", "mcp-strace-*.log")
 	if err != nil {
 		return nil, fmt.Errorf("create strace log: %w", err)
 	}
 	logPath := straceLog.Name()
 	straceLog.Close()
-	defer os.Remove(logPath)
+	defer func() {
+		if saveStraceTo != "" {
+			os.Rename(logPath, saveStraceTo)
+		} else {
+			os.Remove(logPath)
+		}
+	}()
 
 	useStrace := hasStrace()
 

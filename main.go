@@ -76,12 +76,15 @@ func runList(name string, list lists.List, args []string) {
 }
 
 func runStdioScan(args []string) {
-	if len(args) < 1 {
-		fmt.Fprintln(os.Stderr, "usage: mcp-drift stdio-scan <command> [args...]")
+	fs := flag.NewFlagSet("stdio-scan", flag.ExitOnError)
+	straceLog := fs.String("strace-log", "", "save raw strace output to this file")
+	fs.Parse(args)
+	if fs.NArg() < 1 {
+		fmt.Fprintln(os.Stderr, "usage: mcp-drift stdio-scan [-strace-log <path>] <command> [args...]")
 		os.Exit(2)
 	}
 
-	result, err := stdio.Scan(context.Background(), args)
+	result, err := stdio.Scan(context.Background(), fs.Args(), *straceLog)
 	if err != nil {
 		fatal("stdio-scan: %v", err)
 	}
