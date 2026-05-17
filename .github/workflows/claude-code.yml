@@ -1,0 +1,112 @@
+name: Claude Code MCP Scan
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v4.2.2
+
+      - uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v5.4.0
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build
+        run: go build -o mcp-drift .
+
+      - name: Download and extract extension
+        run: |
+          API=$(curl -sf "https://open-vsx.org/api/Anthropic/claude-code/linux-x64/latest")
+          VERSION=$(echo "$API" | python3 -c "import json,sys; print(json.load(sys.stdin)['version'])")
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Extension version: $VERSION"
+
+          VSIX_URL=$(echo "$API" | python3 -c "import json,sys; print(json.load(sys.stdin)['files']['download'])")
+          curl -L -o extension.vsix "$VSIX_URL"
+          unzip -q extension.vsix -d ext
+          chmod +x ext/extension/resources/native-binary/claude
+
+      - name: Scan MCP server
+        run: |
+          mkdir -p live
+          ./mcp-drift stdio-scan \
+            ext/extension/resources/native-binary/claude mcp serve \
+            > live/snapshot.json 2>error.log
+
+          python3 - <<'PYEOF'
+          import json
+
+          d = json.load(open("live/snapshot.json"))
+
+          def write(path, obj):
+              with open(path, "w") as f:
+                  json.dump(obj, f, indent=2)
+                  f.write("\n")
+
+          write("live/tools.json", d["tools"])
+          write("live/prompts.json", d["prompts"])
+          write("live/resources.json", d["resources"])
+          write("live/capabilities.json", {"network": d["network"], "subprocesses": d["subprocesses"]})
+
+          print(f"tools={len(d['tools'])} prompts={len(d['prompts'])} resources={len(d['resources'])} network={len(d['network'])} subprocesses={len(d['subprocesses'])}")
+          PYEOF
+
+      - name: Compare to snapshots
+        id: diff
+        run: |
+          drifted=false
+          for section in tools prompts resources capabilities; do
+            if ! diff -q "snapshots/$section/claude-code.json" "live/$section.json" > /dev/null 2>&1; then
+              echo "Drift detected in $section."
+              drifted=true
+            fi
+          done
+          echo "drifted=$drifted" >> "$GITHUB_OUTPUT"
+
+      - name: Open PR with updated snapshots
+        if: steps.diff.outputs.drifted == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="drift/claude-code-$(date +%Y-%m-%d)"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git checkout -b "$BRANCH"
+
+          cp live/tools.json        snapshots/tools/claude-code.json
+          cp live/prompts.json      snapshots/prompts/claude-code.json
+          cp live/resources.json    snapshots/resources/claude-code.json
+          cp live/capabilities.json snapshots/capabilities/claude-code.json
+
+          changed_sections=()
+          for section in tools prompts resources capabilities; do
+            if ! git diff --quiet -- "snapshots/$section/claude-code.json"; then
+              changed_sections+=("$section")
+            fi
+          done
+
+          git add \
+            snapshots/tools/claude-code.json \
+            snapshots/prompts/claude-code.json \
+            snapshots/resources/claude-code.json \
+            snapshots/capabilities/claude-code.json
+          git commit -m "drift: claude-code MCP snapshot changed $(date +%Y-%m-%d)"
+          git push origin "$BRANCH"
+          gh pr create \
+            --title "drift: claude-code MCP snapshot changed ($(date +%Y-%m-%d))" \
+            --body "Claude Code VS Code extension (v$VERSION) snapshot changed.
+
+          Changed sections: ${changed_sections[*]}
+
+          Review the snapshot diff in the files changed tab." \
+            --base main \
+            --head "$BRANCH"

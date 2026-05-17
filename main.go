@@ -9,11 +9,12 @@ import (
 
 	"mcp-drift/pkg/lists"
 	"mcp-drift/pkg/mcp"
+	"mcp-drift/pkg/stdio"
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: mcp-drift <initialize|tools-list|resources-list|prompts-list> [flags] <url>")
+		fmt.Fprintln(os.Stderr, "usage: mcp-drift <initialize|tools-list|resources-list|prompts-list|stdio-scan> [flags] <url|command>")
 		os.Exit(2)
 	}
 	switch os.Args[1] {
@@ -25,6 +26,8 @@ func main() {
 		runList("resources-list", lists.Resources, os.Args[2:])
 	case "prompts-list":
 		runList("prompts-list", lists.Prompts, os.Args[2:])
+	case "stdio-scan":
+		runStdioScan(os.Args[2:])
 	default:
 		fmt.Fprintf(os.Stderr, "unknown subcommand: %s\n", os.Args[1])
 		os.Exit(2)
@@ -69,6 +72,21 @@ func runList(name string, list lists.List, args []string) {
 	}
 
 	out, _ := json.MarshalIndent(items, "", "  ")
+	fmt.Println(string(out))
+}
+
+func runStdioScan(args []string) {
+	if len(args) < 1 {
+		fmt.Fprintln(os.Stderr, "usage: mcp-drift stdio-scan <command> [args...]")
+		os.Exit(2)
+	}
+
+	result, err := stdio.Scan(context.Background(), args)
+	if err != nil {
+		fatal("stdio-scan: %v", err)
+	}
+
+	out, _ := json.MarshalIndent(result, "", "  ")
 	fmt.Println(string(out))
 }
 

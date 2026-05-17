@@ -150,6 +150,17 @@ go build -o mcp-drift .
   > snapshots/resources/google-developerknowledge.json
 ```
 
+## Monitored stdio Servers
+
+| Server | `tools/list` | `prompts/list` | `resources/list` | `network` | `subprocesses` |
+| ------ | ------------ | -------------- | ---------------- | --------- | -------------- |
+
+The counts are the number of recorded drift updates for each snapshot file. Newly
+monitored files start at zero.
+
+- `✗` — server declared this capability absent in its `initialize` response; snapshot stores `false`
+- `network` and `subprocesses` are captured via `strace` and show the number of unique endpoints/processes observed at last scan
+
 ## Related Work
 
 https://github.com/mcptrust/mcptrust: This implements a lockfile for MCP servers.
