@@ -7,13 +7,17 @@
     {
       "addr": "160.79.104.10",
       "port": 443
+    },
+    {
+      "addr": "2607:6bc0::10",
+      "port": 443
     }
   ],
   "subprocesses": [
     {
-      "cmd": "/tmp/cc/extension/resources/native-binary/claude",
+      "cmd": "/tmp/ext/extension/resources/native-binary/claude",
       "args": [
-        "/tmp/cc/extension/resources/native-binary/claude",
+        "/tmp/ext/extension/resources/native-binary/claude",
         "mcp",
         "serve"
       ]
@@ -23,7 +27,7 @@
       "args": [
         "sh",
         "-c",
-        "currentpid=44344; for i in $(seq"
+        "currentpid=59811; for i in $(seq 1 10); do cmd=$(ps -o command= -p $currentpid 2>/dev/null); if [ -n \\"
       ]
     },
     {
@@ -41,7 +45,15 @@
         "-o",
         "command=",
         "-p",
-        "44344"
+        "59811"
+      ]
+    },
+    {
+      "cmd": "/usr/bin/tr",
+      "args": [
+        "tr",
+        "-d",
+        " "
       ]
     }
   ]
