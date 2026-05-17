@@ -31,15 +31,15 @@ jobs:
           echo "Extension version: $VERSION"
 
           VSIX_URL=$(echo "$API" | python3 -c "import json,sys; print(json.load(sys.stdin)['files']['download'])")
-          curl -L -o extension.vsix "$VSIX_URL"
-          unzip -q extension.vsix -d ext
-          chmod +x ext/extension/resources/native-binary/claude
+          curl -L -o /tmp/extension.vsix "$VSIX_URL"
+          unzip -q /tmp/extension.vsix -d /tmp/ext
+          chmod +x /tmp/ext/extension/resources/native-binary/claude
 
       - name: Scan MCP server
         run: |
           mkdir -p live
           ./mcp-drift stdio-scan -strace-log live/strace.log \
-            "$(pwd)/ext/extension/resources/native-binary/claude" mcp serve \
+            /tmp/ext/extension/resources/native-binary/claude mcp serve \
             > live/snapshot.json 2>error.log
 
           python3 - <<'PYEOF'

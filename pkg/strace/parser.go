@@ -2,8 +2,10 @@ package strace
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"regexp"
+	"sort"
 	"strconv"
 )
 
@@ -82,5 +84,13 @@ func Parse(r io.Reader) Calls {
 	if calls.Subprocesses == nil {
 		calls.Subprocesses = []ExecCall{}
 	}
+	sort.Slice(calls.Network, func(i, j int) bool {
+		ki := fmt.Sprintf("%s:%d", calls.Network[i].Addr, calls.Network[i].Port)
+		kj := fmt.Sprintf("%s:%d", calls.Network[j].Addr, calls.Network[j].Port)
+		return ki < kj
+	})
+	sort.Slice(calls.Subprocesses, func(i, j int) bool {
+		return calls.Subprocesses[i].Cmd < calls.Subprocesses[j].Cmd
+	})
 	return calls
 }
