@@ -45,7 +45,7 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 | [mcp.asana.com/v2/mcp] | ? | ? | ? |
 | [mcp.miro.com] | ? | ? | ? |
 | [api.solveintelligence.com/mcp] | ? | ? | ? |
-| [mcp.twilio.com/docs] | 0 | ✗ | ✗ |
+| [mcp.twilio.com/docs] | 1 | ✗ | ✗ |
 | [mcp.intercom.com/mcp] | ? | ? | ? |
 | [mcp.mintlify.com] | ? | ? | ? |
 | [agents.riskanalytics.dnb.com/mcp] | ? | ? | ? |

@@ -8,7 +8,7 @@
     "inputSchema": {
       "properties": {
         "fields": {
-          "description": "Optional. Limit which top-level fields are returned for each result to reduce payload size. Omit to receive the full spec. For API operations, 'request_body' returns request parameters and body schema; 'response_fields' returns the response schema. Identity fields (api, method, path, operation_id) are always included. All other fields \u2014 including intent, summary, description, product, version, and response_schema \u2014 are excluded when fields is set. Use twilio__search first to get intent and summary; only use fields here when you need the raw parameter or response schema.",
+          "description": "Optional. Limit which top-level fields are returned for each result to reduce payload size. Omit to receive the full spec. For API operations, 'request_body' returns request parameters and body schema; 'response_fields' returns the response schema. Identity fields (api, method, path, operation_id) are always included. All other fields — including intent, summary, description, product, version, and response_schema — are excluded when fields is set. Use twilio__search first to get intent and summary; only use fields here when you need the raw parameter or response schema.",
           "items": {
             "enum": [
               "request_body",
@@ -21,7 +21,7 @@
           "type": "array"
         },
         "ids": {
-          "description": "One or more id values (format: 'op::{api}::{operation_id}') copied verbatim from twilio__search results \u2014 do not construct or guess IDs. Only call this tool after calling twilio__search and receiving results. Pass multiple ids to batch-fetch related operations in one call.",
+          "description": "One or more id values (format: 'op::{api}::{operation_id}') copied verbatim from twilio__search results — do not construct or guess IDs. Only call this tool after calling twilio__search and receiving results. Pass multiple ids to batch-fetch related operations in one call.",
           "items": {
             "type": "string"
           },
@@ -101,14 +101,14 @@
           "type": "string"
         },
         "query": {
-          "description": "Natural language question or description of what you want to do. Be specific \u2014 'how to set up ConversationRelay' or 'send an SMS message' work better than 'relay' or 'messaging'.",
+          "description": "Natural language question or description of what you want to do. Be specific — 'how to set up ConversationRelay' or 'send an SMS message' work better than 'relay' or 'messaging'.",
           "maxLength": 200,
           "minLength": 3,
           "type": "string"
         },
         "source": {
           "default": "all",
-          "description": "Use \"docs\" for conceptual guides, tutorials, and setup questions. Use \"api\" for finding specific API endpoints, operations, and parameters \u2014 preferred for coding tasks. Use \"all\" when unsure (default). \"all\" fires both searches in parallel and interleaves results by rank.",
+          "description": "Use \"docs\" for conceptual guides, tutorials, and setup questions. Use \"api\" for finding specific API endpoints, operations, and parameters — preferred for coding tasks. Use \"all\" when unsure (default). \"all\" fires both searches in parallel and interleaves results by rank.",
           "enum": [
             "docs",
             "api",
