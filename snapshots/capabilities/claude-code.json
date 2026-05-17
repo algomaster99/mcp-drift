@@ -11,13 +11,21 @@
     {
       "addr": "2607:6bc0::10",
       "port": 443
+    },
+    {
+      "addr": "34.149.66.137",
+      "port": 443
+    },
+    {
+      "addr": "2600:1901:0:3084::",
+      "port": 443
     }
   ],
   "subprocesses": [
     {
-      "cmd": "/tmp/ext/extension/resources/native-binary/claude",
+      "cmd": "/home/aman/Desktop/chains/mcp-drift/ext/extension/resources/native-binary/claude",
       "args": [
-        "/tmp/ext/extension/resources/native-binary/claude",
+        "/home/aman/Desktop/chains/mcp-drift/ext/extension/resources/native-binary/claude",
         "mcp",
         "serve"
       ]
@@ -27,7 +35,7 @@
       "args": [
         "sh",
         "-c",
-        "currentpid=59811; for i in $(seq 1 10); do cmd=$(ps -o command= -p $currentpid 2>/dev/null); if [ -n \\"
+        "currentpid=71630; for i in $(seq 1 10); do cmd=$(ps -o command= -p $currentpid 2>/dev/null); if [ -n \\"
       ]
     },
     {
@@ -45,7 +53,7 @@
         "-o",
         "command=",
         "-p",
-        "59811"
+        "71630"
       ]
     },
     {

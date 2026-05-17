@@ -92,7 +92,7 @@ func Scan(ctx context.Context, cmdArgs []string, saveStraceTo string) (*ScanResu
 	go func() { cmd.Wait(); close(done) }()
 	select {
 	case <-done:
-	case <-time.After(2 * time.Second):
+	case <-time.After(time.Minute):
 		cmd.Process.Kill()
 		<-done
 	}

@@ -39,7 +39,7 @@ jobs:
         run: |
           mkdir -p live
           ./mcp-drift stdio-scan -strace-log live/strace.log \
-            ext/extension/resources/native-binary/claude mcp serve \
+            "$(pwd)/ext/extension/resources/native-binary/claude" mcp serve \
             > live/snapshot.json 2>error.log
 
           python3 - <<'PYEOF'
