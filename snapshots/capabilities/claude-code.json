@@ -1,0 +1,48 @@
+{
+  "network": [
+    {
+      "addr": "127.0.0.53",
+      "port": 53
+    },
+    {
+      "addr": "160.79.104.10",
+      "port": 443
+    }
+  ],
+  "subprocesses": [
+    {
+      "cmd": "/tmp/cc/extension/resources/native-binary/claude",
+      "args": [
+        "/tmp/cc/extension/resources/native-binary/claude",
+        "mcp",
+        "serve"
+      ]
+    },
+    {
+      "cmd": "/usr/bin/sh",
+      "args": [
+        "sh",
+        "-c",
+        "currentpid=44344; for i in $(seq"
+      ]
+    },
+    {
+      "cmd": "/usr/bin/seq",
+      "args": [
+        "seq",
+        "1",
+        "10"
+      ]
+    },
+    {
+      "cmd": "/usr/bin/ps",
+      "args": [
+        "ps",
+        "-o",
+        "command=",
+        "-p",
+        "44344"
+      ]
+    }
+  ]
+}
