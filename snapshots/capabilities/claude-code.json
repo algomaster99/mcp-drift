@@ -5,63 +5,21 @@
       "port": 53
     },
     {
-      "addr": "160.79.104.10",
-      "port": 443
-    },
-    {
       "addr": "2607:6bc0::10",
       "port": 443
     },
     {
-      "addr": "34.149.66.137",
-      "port": 443
-    },
-    {
-      "addr": "2600:1901:0:3084::",
+      "addr": "160.79.104.10",
       "port": 443
     }
   ],
   "subprocesses": [
     {
-      "cmd": "/home/aman/Desktop/chains/mcp-drift/ext/extension/resources/native-binary/claude",
+      "cmd": "/home/runner/work/mcp-drift/mcp-drift/ext/extension/resources/native-binary/claude",
       "args": [
-        "/home/aman/Desktop/chains/mcp-drift/ext/extension/resources/native-binary/claude",
+        "/home/runner/work/mcp-drift/mcp-drift/ext/extension/resources/native-binary/claude",
         "mcp",
         "serve"
-      ]
-    },
-    {
-      "cmd": "/usr/bin/sh",
-      "args": [
-        "sh",
-        "-c",
-        "currentpid=71630; for i in $(seq 1 10); do cmd=$(ps -o command= -p $currentpid 2>/dev/null); if [ -n \\"
-      ]
-    },
-    {
-      "cmd": "/usr/bin/seq",
-      "args": [
-        "seq",
-        "1",
-        "10"
-      ]
-    },
-    {
-      "cmd": "/usr/bin/ps",
-      "args": [
-        "ps",
-        "-o",
-        "command=",
-        "-p",
-        "71630"
-      ]
-    },
-    {
-      "cmd": "/usr/bin/tr",
-      "args": [
-        "tr",
-        "-d",
-        " "
       ]
     }
   ]
