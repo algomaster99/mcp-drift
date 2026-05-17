@@ -96,13 +96,24 @@ jobs:
           cp live/capabilities.json snapshots/capabilities/claude-code.json
 
           changed_sections=()
-          for section in tools prompts resources capabilities; do
+          changed_lists=()
+          for section in tools prompts resources; do
             if ! git diff --quiet -- "snapshots/$section/claude-code.json"; then
               changed_sections+=("$section")
+              changed_lists+=("$section")
             fi
           done
+          if ! git diff --quiet -- "snapshots/capabilities/claude-code.json"; then
+            changed_sections+=("capabilities")
+            changed_lists+=("network" "subprocesses")
+          fi
+
+          if [ ${#changed_lists[@]} -gt 0 ]; then
+            python3 .github/scripts/bump_readme_counts.py README.md "Claude Code" "${changed_lists[@]}"
+          fi
 
           git add \
+            README.md \
             snapshots/tools/claude-code.json \
             snapshots/prompts/claude-code.json \
             snapshots/resources/claude-code.json \

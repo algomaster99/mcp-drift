@@ -3,11 +3,21 @@ import argparse
 from pathlib import Path
 
 
-LIST_COLUMNS = {
+HTTP_COLUMNS = {
     "tools": 1,
     "prompts": 2,
     "resources": 3,
 }
+
+STDIO_COLUMNS = {
+    "tools": 1,
+    "prompts": 2,
+    "resources": 3,
+    "network": 4,
+    "subprocesses": 5,
+}
+
+ALL_CHOICES = sorted(STDIO_COLUMNS)
 
 
 def parse_args() -> argparse.Namespace:
@@ -16,7 +26,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("readme", type=Path)
     parser.add_argument("server_cell")
-    parser.add_argument("lists", nargs="+", choices=sorted(LIST_COLUMNS))
+    parser.add_argument("lists", nargs="+", choices=ALL_CHOICES)
     return parser.parse_args()
 
 
@@ -34,11 +44,19 @@ def bump_counts(readme: Path, server_cell: str, changed_lists: list[str]) -> Non
 
     for index, line in enumerate(lines):
         cells = split_row(line)
-        if len(cells) != 4 or cells[0] != server_cell:
+        if cells[0] != server_cell:
+            continue
+        if len(cells) == 4:
+            columns = HTTP_COLUMNS
+        elif len(cells) == 6:
+            columns = STDIO_COLUMNS
+        else:
             continue
 
         for changed_list in changed_lists:
-            column = LIST_COLUMNS[changed_list]
+            if changed_list not in columns:
+                continue
+            column = columns[changed_list]
             if cells[column] in ("?", "✗"):
                 # Auth-gated (?) or not supported (✗) — leave marker, don't count
                 continue
