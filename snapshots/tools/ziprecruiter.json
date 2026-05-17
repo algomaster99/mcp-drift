@@ -109,7 +109,7 @@
         "resourceUri": "ui://widgets/job-carousel"
       },
       "openai/widgetDescription": "Renders an interactive UI showcasing job listings returned by search-jobs. The interface displays jobs in a carousel, each with company logo, job title, salary range, and location details. Each job card includes an \"View Job Details\" button that redirects users to ZipRecruiter for more details or to apply for the job.",
-      "openai/toolInvocation/invoking": "Searching for jobs\u2026",
+      "openai/toolInvocation/invoking": "Searching for jobs…",
       "openai/toolInvocation/invoked": "Finished searching",
       "ui/resourceUri": "ui://widgets/job-carousel"
     }
