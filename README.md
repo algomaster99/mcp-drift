@@ -33,7 +33,7 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 | [legal-mcp.thomsonreuters.com/mcp] | ? | ? | ? |
 | [mcp.zoom.us/mcp/zoom/streamable] | ? | ? | ? |
 | [mcp.slack.com/mcp] | ? | ? | ? |
-| [mcp.ramp.com/ramp-data/anthropic/mcp] | 0 | ✗ | ✗ |
+| [mcp.ramp.com/ramp-data/anthropic/mcp] | 1 | ✗ | ✗ |
 | [integrations.getmontecarlo.com/mcp] | ? | ? | ? |
 | [mcp.hubspot.com/anthropic] | ? | ? | ? |
 | [mcp.courtlistener.com] | ? | ? | ? |
