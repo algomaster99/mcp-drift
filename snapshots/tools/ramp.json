@@ -227,7 +227,7 @@
           "maximum": 120.0,
           "minimum": 1.0,
           "title": "months",
-          "description": "Number of months of historical data to return (1\u2013120, default 1); available history begins around January 2023, so fewer months may be returned.",
+          "description": "Number of months of historical data to return (1–120, default 1); available history begins around January 2023, so fewer months may be returned.",
           "default": 1
         }
       },
@@ -259,7 +259,7 @@
           "maximum": 120.0,
           "minimum": 1.0,
           "title": "months",
-          "description": "Number of months of historical data to return (1\u2013120, default 1); available history begins around January 2023, so fewer months may be returned.",
+          "description": "Number of months of historical data to return (1–120, default 1); available history begins around January 2023, so fewer months may be returned.",
           "default": 1
         }
       },
@@ -291,7 +291,7 @@
           "maximum": 120.0,
           "minimum": 1.0,
           "title": "months",
-          "description": "Number of months of historical data to return (1\u2013120, default 1); available history begins around January 2023, so fewer months may be returned.",
+          "description": "Number of months of historical data to return (1–120, default 1); available history begins around January 2023, so fewer months may be returned.",
           "default": 1
         }
       },
