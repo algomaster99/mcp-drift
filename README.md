@@ -20,7 +20,7 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 | ------ | ------------ | -------------- | ---------------- |
 | [huggingface.co/mcp] | 4 | 0 | ✗ |
 | [developerknowledge.googleapis.com/mcp] | 1 | 0 | ✗ |
-| [gmailmcp.googleapis.com/mcp/v1] | 0 | 0 | ✗ |
+| [gmailmcp.googleapis.com/mcp/v1] | 1 | 0 | ✗ |
 | [drivemcp.googleapis.com/mcp/v1] | 0 | 0 | ✗ |
 | [calendarmcp.googleapis.com/mcp/v1] | 1 | 0 | ✗ |
 | [mcp.canva.com/mcp] | ? | ? | ? |
