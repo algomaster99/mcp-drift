@@ -34,7 +34,7 @@
           "type": "string"
         },
         "pageSize": {
-          "description": "Optional. Maximum number of events returned on one result page. The number of events in the resulting page may be less than this value, or none at all, even if there are more events matching the query. Incomplete pages can be detected by a non-empty `next_page_token` field in the response. By default the value is 100 events. If set, the page size must be positive and not larger than 250 events.",
+          "description": "Optional. Maximum number of events returned on one result page. The number of events in the resulting page may be less than this value, or none at all, even if there are more events matching the query. Incomplete pages can be detected by a non-empty `nextPageToken` field in the response. By default the value is 100 events. If set, the page size must be positive and not larger than 250 events. It is recommended to set pageSize=10 for most queries to save context and use `nextPageToken` to fetch additional pages.",
           "format": "int32",
           "type": "integer"
         },
