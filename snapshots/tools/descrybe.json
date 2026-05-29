@@ -47,6 +47,15 @@
           ],
           "default": "authority",
           "description": "authority returns strong legal authorities first; date returns newer cases first."
+        },
+        "search_focus": {
+          "type": "string",
+          "enum": [
+            "general",
+            "legal_issue"
+          ],
+          "default": "general",
+          "description": "Optional search focus. Use general unless a workflow specifically asks for legal issue exploration."
         }
       },
       "required": [
@@ -389,7 +398,7 @@
   {
     "name": "get_case_pdf",
     "title": "Get Case PDF",
-    "description": "Retrieves or prepares a public PDF URL for all opinions in a known Descrybe case. Requires a Descrybe case_id; returns PDF asset metadata or preparation status, not PDF bytes.",
+    "description": "Creates or reuses a generated Descrybe case PDF asset and returns its public URL. Requires a Descrybe case_id. Returns URL/job metadata or preparation status, not PDF bytes; present the URL to the user instead of trying to download the file.",
     "inputSchema": {
       "type": "object",
       "properties": {
