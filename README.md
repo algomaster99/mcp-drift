@@ -154,7 +154,7 @@ go build -o mcp-drift .
 
 | Server | `tools/list` | `prompts/list` | `resources/list` | `network` | `subprocesses` |
 | ------ | ------------ | -------------- | ---------------- | --------- | -------------- |
-| Claude Code | 1 | 0 | 0 | 0 | 0 |
+| Claude Code | 2 | 0 | 0 | 0 | 0 |
 
 The counts are the number of recorded drift updates for each snapshot file. Newly
 monitored files start at zero.
