@@ -49,7 +49,7 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 | [mcp.intercom.com/mcp] | ? | ? | ? |
 | [mcp.mintlify.com] | ? | ? | ? |
 | [agents.riskanalytics.dnb.com/mcp] | ? | ? | ? |
-| [api.ziprecruiter.com/mcp] | 1 | ✗ | 1 |
+| [api.ziprecruiter.com/mcp] | 2 | ✗ | 1 |
 | [mcp.datadoghq.com/api/unstable/mcp-server/mcp] | ? | ? | ? |
 | [mcp.box.com] | ? | ? | ? |
 | [mcp.granola.ai/mcp] | ? | ? | ? |
