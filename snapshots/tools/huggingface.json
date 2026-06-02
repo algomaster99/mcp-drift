@@ -238,7 +238,7 @@
   },
   {
     "name": "hf_doc_search",
-    "description": "Search and Discover Hugging Face Product and Library documentation. Send an empty query to discover structure and navigation instructions. Knowledge up-to-date as at 31 May 2026. Combine with the Product filter to focus results.",
+    "description": "Search and Discover Hugging Face Product and Library documentation. Send an empty query to discover structure and navigation instructions. Knowledge up-to-date as at 2 June 2026. Combine with the Product filter to focus results.",
     "inputSchema": {
       "type": "object",
       "properties": {
