@@ -1,28 +1,21 @@
 [
   {
     "name": "search_jobs",
-    "description": "Use this tool whenever the user asks to find, browse, view, recommend, or search for jobs, roles, openings, gigs, internships, or job listings. It only shows jobs that are within the United States or Canada.\nGuidelines:\n- Do not provide fields unless the user explicitly provides them.\n- The tool provides the search results all in one list, so if the user intends to search for multiple job roles, it may be better to invoke the tool for each job role separately.\n- If the user does not explicitly provide a location, you should ask the user.\n",
+    "description": "Do not use this tool if the search is for jobs outside of the United States or Canada. Use this tool when the user expresses intent to find, search, browse, view, or compare job opportunities, for example, full-time roles, part-time positions, remote jobs, and many more. The user can find jobs by job title, skills, keywords, location, remote options, salary range, employment type, experience level, and posting recency.\nThe tool works best when searching for a single job role at a time, so queries with multiple job roles will not produce expected results.\nSTRICT ARGUMENT RULE: \n- Optional filters are opt-in only. The assistant must omit every optional filter unless the user explicitly stated that criterion in the current conversation. \n- Broad job-search requests must not be narrowed by default.\n\nIMPORTANT LOCATION RULES:\n- Do NOT guess the user's country, state/province, city, or address.\n- Do NOT set country_admin_code unless it is provided by the user.\n- Do NOT set location_types unless the user explicitly specifies a REMOTE/HYBRID/PHYSICAL job.\n- If no concrete location is available for a local search, ask the user for a city, state/province or address before invoking the tool.\n- If the user asks for remote jobs only, location may be omitted unless they specify a country.\n\nTrigger examples (invoke the tool for any of these):\n- \"find me a job\", \"show me remote jobs\", \"any part-time roles?\", \"what jobs are hiring\"\n- \"software engineer jobs in Austin\", \"warehouse jobs paying $25/hr\"\n- Follow-ups like \"more like these\", \"show next page\", \"any senior ones?\" \n\nNote:\n1. Extract relevant search criteria from the user's request; omit fields the user didn't specify.\n2. Tool response includes URL links for each job. When LLM is including URLs in the text response, always format them as Markdown hyperlinks using descriptive anchor text. Never output raw URLs.",
     "inputSchema": {
       "type": "object",
       "properties": {
-        "job_role": {
+        "query": {
           "type": "string",
-          "description": "Specific job role to search for. This can be omitted if the user's intentions are to search broadly. Good example: 'software engineer', Bad example: 'sitting job'"
-        },
-        "skills": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Explicit skills mentioned by the user that are relevant to the job they're looking for.  Good example: 'SQL'"
+          "description": "Query syntax:\n- Don't use plus sign, just include skills as keywords in the query string\n- Broad search should be simple and straightforward\n- Quoted \"phrase\" for perfect phrase matching, don't use it for broad search\n- At the end of the query, if it's called out that the user wants to exclude skills, use \"-\" prefix for must exclude skills, one minus sign for one skill only, don't include this for usual job title or job description\n"
         },
         "location": {
           "type": "string",
-          "description": "Concrete city, state, zip code, or address to search in. Good example: 'Montreal, Quebec', Bad example: 'near me'"
+          "description": "City, state, zip code, or address the user wants to perform a search in. i.e. 'Santa Monica, CA' Do not use vague terms like 'nearby' or 'near me'."
         },
         "radius_miles": {
           "type": "number",
-          "description": "Search radius in miles from the location."
+          "description": "Search radius in miles from the location (default: 25)"
         },
         "country_admin_code": {
           "type": "string",
@@ -30,20 +23,15 @@
         },
         "max_posted_minutes_ago": {
           "type": "number",
-          "minimum": 1440,
-          "description": "Maximum number of minutes ago the job was posted. MIN: 1440"
+          "description": "Only return jobs posted within the last N minutes (don't include this if the user doesn't specify a time frame), at least 1 day ago"
         },
         "salary_min": {
           "type": "number",
-          "minimum": 0,
-          "maximum": 300000,
-          "description": "Minimum annual salary filter. MIN: 0"
+          "description": "Minimum annual salary filter, minimum is 0"
         },
         "salary_max": {
           "type": "number",
-          "minimum": 0,
-          "maximum": 300000,
-          "description": "Maximum annual salary filter and must be greater than salary_min. MAX: 300000"
+          "description": "Maximum annual salary filter, maximum is 300000, should be greater than salary_min"
         },
         "location_types": {
           "type": "array",
@@ -56,7 +44,7 @@
               "HYBRID"
             ]
           },
-          "description": "The location type of the job."
+          "description": "Remote options filter: REMOTE, HYBRID, PHYSICAL. Only set this when the user explicitly wants remote/hybrid/on-site jobs."
         },
         "employment_types": {
           "type": "array",
@@ -74,7 +62,7 @@
               "INTERNSHIP"
             ]
           },
-          "description": "The employment type of the job."
+          "description": "Omit this if the user does not explicitly specify an employment type. i.e. 'remote product jobs that pay 180k' should not include this because it doesn't explicitly specify an employment type. Employment type filter: FULL_TIME, PART_TIME, CONTRACT, CONTRACT_TO_HIRE, TEMPORARY, INTERNSHIP"
         },
         "seniority_classes": {
           "type": "array",
@@ -88,20 +76,23 @@
               "SENIOR"
             ]
           },
-          "description": "The seniority class of the job."
+          "description": "Only provide this if the user explicitly specifies a seniority class. Experience level filter: NO_EXPERIENCE, JUNIOR, MID, SENIOR"
         },
         "unsupported_filters": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Any unsupported filters provided by the user. Good examples: 401K, benefits"
+          "description": "If the user provides a filter that is not supported, include it here (e.g. 401K, benefits, etc.)"
         },
         "offset": {
           "type": "number",
-          "description": "Number of results to skip for pagination"
+          "description": "Number of results to skip for pagination (default: 0, max: 5)"
         }
       },
+      "required": [
+        "query"
+      ],
       "additionalProperties": false,
       "$schema": "http://json-schema.org/draft-07/schema#"
     },
@@ -121,201 +112,6 @@
       "openai/toolInvocation/invoking": "Searching for jobs…",
       "openai/toolInvocation/invoked": "Finished searching",
       "ui/resourceUri": "ui://widgets/job-carousel"
-    },
-    "outputSchema": {
-      "type": "object",
-      "properties": {
-        "request": {
-          "type": "object",
-          "properties": {
-            "job_role": {
-              "type": "string",
-              "description": "Job role provided as input to the tool call"
-            },
-            "skills": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": "Skills provided as input to the tool call"
-            },
-            "location": {
-              "type": "string",
-              "description": "Location provided as input to the tool call"
-            },
-            "filters": {
-              "type": "object",
-              "additionalProperties": {},
-              "description": "Remaining inputs provided to the tool call except 'offset'"
-            }
-          },
-          "required": [
-            "filters"
-          ],
-          "additionalProperties": false,
-          "description": "Echo of the inputs provided to the tool call"
-        },
-        "results": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "title": {
-                "type": "string",
-                "description": "Job title"
-              },
-              "company": {
-                "type": "string",
-                "description": "Company name"
-              },
-              "location": {
-                "type": "string",
-                "description": "Location of the job"
-              },
-              "is_remote": {
-                "type": "boolean",
-                "description": "Whether the job is remote"
-              },
-              "salary": {
-                "anyOf": [
-                  {
-                    "type": "object",
-                    "properties": {
-                      "min_annual": {
-                        "type": [
-                          "number",
-                          "null"
-                        ],
-                        "description": "Minimum annual salary"
-                      },
-                      "max_annual": {
-                        "type": [
-                          "number",
-                          "null"
-                        ],
-                        "description": "Maximum annual salary"
-                      }
-                    },
-                    "required": [
-                      "min_annual",
-                      "max_annual"
-                    ],
-                    "additionalProperties": false
-                  },
-                  {
-                    "type": "null"
-                  }
-                ],
-                "description": "Salary range of the job"
-              },
-              "company_logo": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "URL of the company logo"
-              },
-              "job_redirect_url": {
-                "type": "string",
-                "description": "URL to view the job listing on ZipRecruiter"
-              },
-              "job_type": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The employment type and/or location type of the job"
-              },
-              "benefits": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Benefits provided by the job"
-              },
-              "days_ago": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "description": "Days since the job was posted"
-              }
-            },
-            "required": [
-              "title",
-              "company",
-              "location",
-              "is_remote",
-              "salary",
-              "company_logo",
-              "job_redirect_url",
-              "job_type",
-              "benefits",
-              "days_ago"
-            ],
-            "additionalProperties": false
-          },
-          "description": "List of matching job results"
-        },
-        "status": {
-          "type": "string",
-          "enum": [
-            "OK",
-            "ERROR",
-            "NO_RESULTS",
-            "UNSUPPORTED_CONSTRAINTS",
-            "UNSUPPORTED_COUNTRY"
-          ],
-          "description": "Response status of the tool call"
-        },
-        "meta": {
-          "type": "object",
-          "properties": {
-            "count": {
-              "type": "number",
-              "description": "Number of job results returned by tool call"
-            },
-            "offset": {
-              "type": "number",
-              "description": "Pagination offset response is using"
-            },
-            "limit": {
-              "type": "number",
-              "description": "Maximum number of results per page"
-            },
-            "total": {
-              "type": "number",
-              "description": "Total number of matching job available"
-            }
-          },
-          "required": [
-            "count",
-            "limit",
-            "total"
-          ],
-          "additionalProperties": false,
-          "description": "Response metadata from the tool call"
-        },
-        "errorMessage": {
-          "type": "string",
-          "description": "Error message from the tool call if an error occurs"
-        },
-        "warnings": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Note-worthy warnings encountered when executing the tool"
-        }
-      },
-      "required": [
-        "request",
-        "status",
-        "meta",
-        "warnings"
-      ],
-      "additionalProperties": false,
-      "$schema": "http://json-schema.org/draft-07/schema#"
     }
   }
 ]
