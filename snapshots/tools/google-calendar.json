@@ -56,47 +56,66 @@
     "name": "list_events",
     "outputSchema": {
       "$defs": {
+        "Attachment": {
+          "description": "A file attachment for an event.",
+          "properties": {
+            "fileUrl": {
+              "description": "Required. URL link to the attachment.",
+              "type": "string"
+            },
+            "title": {
+              "description": "Optional. Attachment title. Optional.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "Attendee": {
+          "description": "An event attendee.",
           "properties": {
             "additionalGuests": {
-              "description": "Number of additional guests. Optional. The default is 0.",
+              "description": "Optional. Number of additional guests. Optional. The default is 0.",
               "format": "int32",
               "type": "integer"
             },
             "comment": {
-              "description": "The attendee's response comment. Optional.",
+              "description": "Output only. The attendee's response comment. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "displayName": {
-              "description": "The attendee's name, if available. Optional.",
+              "description": "Optional. The attendee's name. Optional.",
               "type": "string"
             },
             "email": {
-              "description": "The attendee's email address, if available. This field must be present when adding an attendee. It must be a valid email address as per RFC5322. Required when adding an attendee.",
+              "description": "Required. The attendee's email address. This field must be present when adding an attendee. It must be a valid email address as per RFC5322.",
               "type": "string"
             },
             "id": {
-              "description": "The attendee's Profile ID, if available.",
+              "description": "Output only. The attendee's Profile ID. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "optionalAttendee": {
-              "description": "Whether this is an optional attendee. Optional. The default is False.",
+              "description": "Optional. Whether this is an optional attendee. Optional. The default is False.",
               "type": "boolean"
             },
             "organizer": {
-              "description": "Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "description": "Output only. Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             },
             "resource": {
-              "description": "Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
+              "description": "Optional. Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
               "type": "boolean"
             },
             "responseStatus": {
-              "description": "The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
+              "description": "Optional. The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
               "type": "string"
             },
             "self": {
-              "description": "Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "description": "Output only. Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             }
           },
@@ -122,6 +141,13 @@
         },
         "Event": {
           "properties": {
+            "attachments": {
+              "description": "File attachments for the event.",
+              "items": {
+                "$ref": "#/$defs/Attachment"
+              },
+              "type": "array"
+            },
             "attendees": {
               "description": "The attendees of the event.",
               "items": {
@@ -156,6 +182,10 @@
             "eventType": {
               "description": "Specific type of the event. This cannot be modified after the event is created. Possible values are: * `birthday` - A special all-day event with an annual recurrence. * `default` - A regular event or not further specified. * `focusTime` - A focus-time event. * `fromGmail` - An event from Gmail. This type of event cannot be created. * `outOfOffice` - An out-of-office event. * `workingLocation` - A working location event.",
               "type": "string"
+            },
+            "guestPermissions": {
+              "$ref": "#/$defs/GuestPermissions",
+              "description": "Guest permissions for the event."
             },
             "htmlLink": {
               "description": "An absolute link to this event in the Google Calendar Web UI. Read-only.",
@@ -218,6 +248,24 @@
             "visibility": {
               "description": "Visibility of the event. Optional. Possible values are: * `default` - Uses the default visibility for events on the calendar. This is the default value. * `public` - The event is public and event details are visible to all readers of the calendar. * `private` - The event is private and only event attendees may view event details. * `confidential` - The event is private. This value is provided for compatibility reasons.",
               "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "GuestPermissions": {
+          "description": "Guest permissions details.",
+          "properties": {
+            "guestsCanInviteOthers": {
+              "description": "Optional. Whether attendees other than the organizer can invite others to the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanModify": {
+              "description": "Optional. Whether attendees other than the organizer can modify the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanSeeGuests": {
+              "description": "Optional. Whether attendees other than the organizer can see who the event's attendees are. Optional.",
+              "type": "boolean"
             }
           },
           "type": "object"
@@ -326,47 +374,66 @@
     "name": "get_event",
     "outputSchema": {
       "$defs": {
+        "Attachment": {
+          "description": "A file attachment for an event.",
+          "properties": {
+            "fileUrl": {
+              "description": "Required. URL link to the attachment.",
+              "type": "string"
+            },
+            "title": {
+              "description": "Optional. Attachment title. Optional.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "Attendee": {
+          "description": "An event attendee.",
           "properties": {
             "additionalGuests": {
-              "description": "Number of additional guests. Optional. The default is 0.",
+              "description": "Optional. Number of additional guests. Optional. The default is 0.",
               "format": "int32",
               "type": "integer"
             },
             "comment": {
-              "description": "The attendee's response comment. Optional.",
+              "description": "Output only. The attendee's response comment. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "displayName": {
-              "description": "The attendee's name, if available. Optional.",
+              "description": "Optional. The attendee's name. Optional.",
               "type": "string"
             },
             "email": {
-              "description": "The attendee's email address, if available. This field must be present when adding an attendee. It must be a valid email address as per RFC5322. Required when adding an attendee.",
+              "description": "Required. The attendee's email address. This field must be present when adding an attendee. It must be a valid email address as per RFC5322.",
               "type": "string"
             },
             "id": {
-              "description": "The attendee's Profile ID, if available.",
+              "description": "Output only. The attendee's Profile ID. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "optionalAttendee": {
-              "description": "Whether this is an optional attendee. Optional. The default is False.",
+              "description": "Optional. Whether this is an optional attendee. Optional. The default is False.",
               "type": "boolean"
             },
             "organizer": {
-              "description": "Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "description": "Output only. Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             },
             "resource": {
-              "description": "Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
+              "description": "Optional. Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
               "type": "boolean"
             },
             "responseStatus": {
-              "description": "The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
+              "description": "Optional. The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
               "type": "string"
             },
             "self": {
-              "description": "Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "description": "Output only. Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             }
           },
@@ -386,6 +453,24 @@
             "timeZone": {
               "description": "TZDB timezone name if available.",
               "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "GuestPermissions": {
+          "description": "Guest permissions details.",
+          "properties": {
+            "guestsCanInviteOthers": {
+              "description": "Optional. Whether attendees other than the organizer can invite others to the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanModify": {
+              "description": "Optional. Whether attendees other than the organizer can modify the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanSeeGuests": {
+              "description": "Optional. Whether attendees other than the organizer can see who the event's attendees are. Optional.",
+              "type": "boolean"
             }
           },
           "type": "object"
@@ -424,6 +509,13 @@
         }
       },
       "properties": {
+        "attachments": {
+          "description": "File attachments for the event.",
+          "items": {
+            "$ref": "#/$defs/Attachment"
+          },
+          "type": "array"
+        },
         "attendees": {
           "description": "The attendees of the event.",
           "items": {
@@ -458,6 +550,10 @@
         "eventType": {
           "description": "Specific type of the event. This cannot be modified after the event is created. Possible values are: * `birthday` - A special all-day event with an annual recurrence. * `default` - A regular event or not further specified. * `focusTime` - A focus-time event. * `fromGmail` - An event from Gmail. This type of event cannot be created. * `outOfOffice` - An out-of-office event. * `workingLocation` - A working location event.",
           "type": "string"
+        },
+        "guestPermissions": {
+          "$ref": "#/$defs/GuestPermissions",
+          "description": "Guest permissions for the event."
         },
         "htmlLink": {
           "description": "An absolute link to this event in the Google Calendar Web UI. Read-only.",
@@ -711,6 +807,95 @@
     "description": "Creates a calendar event.\n\nUse this tool for queries like:\n\n * Create an event on my calendar for tomorrow at 2pm called 'Meeting with Jane'.\n * Schedule a meeting with john.doe@google.com next Monday from 10am to 11am.\n\nExample:\n\n    create_event(\n        summary='Meeting with Jane',\n        startTime='2024-09-17T14:00:00',\n        endTime='2024-09-17T15:00:00'\n    )\n    # Creates an event on the primary calendar for September 17, 2024 from 2pm to 3pm called 'Meeting with Jane'.\n",
     "inputSchema": {
       "$defs": {
+        "Attachment": {
+          "description": "A file attachment for an event.",
+          "properties": {
+            "fileUrl": {
+              "description": "Required. URL link to the attachment.",
+              "type": "string"
+            },
+            "title": {
+              "description": "Optional. Attachment title. Optional.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "fileUrl"
+          ],
+          "type": "object"
+        },
+        "Attendee": {
+          "description": "An event attendee.",
+          "properties": {
+            "additionalGuests": {
+              "description": "Optional. Number of additional guests. Optional. The default is 0.",
+              "format": "int32",
+              "type": "integer"
+            },
+            "comment": {
+              "description": "Output only. The attendee's response comment. Optional. Read-only.",
+              "readOnly": true,
+              "type": "string"
+            },
+            "displayName": {
+              "description": "Optional. The attendee's name. Optional.",
+              "type": "string"
+            },
+            "email": {
+              "description": "Required. The attendee's email address. This field must be present when adding an attendee. It must be a valid email address as per RFC5322.",
+              "type": "string"
+            },
+            "id": {
+              "description": "Output only. The attendee's Profile ID. Optional. Read-only.",
+              "readOnly": true,
+              "type": "string"
+            },
+            "optionalAttendee": {
+              "description": "Optional. Whether this is an optional attendee. Optional. The default is False.",
+              "type": "boolean"
+            },
+            "organizer": {
+              "description": "Output only. Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "readOnly": true,
+              "type": "boolean"
+            },
+            "resource": {
+              "description": "Optional. Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
+              "type": "boolean"
+            },
+            "responseStatus": {
+              "description": "Optional. The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
+              "type": "string"
+            },
+            "self": {
+              "description": "Output only. Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "readOnly": true,
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "email"
+          ],
+          "type": "object"
+        },
+        "GuestPermissions": {
+          "description": "Guest permissions details.",
+          "properties": {
+            "guestsCanInviteOthers": {
+              "description": "Optional. Whether attendees other than the organizer can invite others to the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanModify": {
+              "description": "Optional. Whether attendees other than the organizer can modify the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanSeeGuests": {
+              "description": "Optional. Whether attendees other than the organizer can see who the event's attendees are. Optional.",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
         "Reminder": {
           "description": "An event reminder.",
           "properties": {
@@ -738,15 +923,44 @@
           "type": "boolean"
         },
         "allDay": {
-          "description": "Optional. Whether the event is an all-day event. The default is False. If true, the start and end time must be set to midnight UTC.",
+          "description": "Optional. Whether the event is an all-day event. The default is False. If true, the start and end time are treated as midnight.",
           "type": "boolean"
         },
+        "attachments": {
+          "description": "Optional. File attachments for the event. Optional.",
+          "items": {
+            "$ref": "#/$defs/Attachment"
+          },
+          "type": "array"
+        },
         "attendeeEmails": {
-          "description": "Optional. The additional attendees of the event, as email addresses. For events that are created on the user's primary calendar with at least one other attendee, the current user will automatically be added as an attendee if not already included in this list.",
+          "deprecated": true,
+          "description": "Optional. Deprecated: use `attendees` instead. The additional attendees of the event, as email addresses. For events that are created on the user's primary calendar with at least one other attendee, the current user will automatically be added as an attendee if not already included in this list.",
           "items": {
             "type": "string"
           },
           "type": "array"
+        },
+        "attendees": {
+          "description": "Optional. The additional attendees of the event. For events that are created on the user's primary calendar with at least one other attendee, the current user will automatically be added as an attendee if not already included in this list.",
+          "items": {
+            "$ref": "#/$defs/Attendee"
+          },
+          "type": "array"
+        },
+        "availability": {
+          "description": "Optional. Whether the event blocks time on the calendar. Optional.",
+          "enum": [
+            "AVAILABILITY_UNSPECIFIED",
+            "AVAILABILITY_BUSY",
+            "AVAILABILITY_FREE"
+          ],
+          "type": "string",
+          "x-google-enum-descriptions": [
+            "Default value. Will be treated as BUSY.",
+            "The event blocks time on the calendar.",
+            "The event does not block time on the calendar (Free / Available)."
+          ]
         },
         "calendarId": {
           "description": "Optional. The calendar ID to create the event on. The default is the user's primary calendar.",
@@ -765,8 +979,12 @@
           "type": "string"
         },
         "googleMeetUrl": {
-          "description": "Optional. Allows attaching an existing Google Meet URL or meeting ID to the event. If set, this URL will be attached to the event instead of generating a new Google Meet room, even if `add_google_meet_url` is set to `true`.",
+          "description": "Optional. Allows attaching an existing Google Meet URL or meeting ID to the event. If set, this URL will be attached to the event instead of generating a new Google Meet room, even if `addGoogleMeetUrl` is set to `true`.",
           "type": "string"
+        },
+        "guestPermissions": {
+          "$ref": "#/$defs/GuestPermissions",
+          "description": "Optional. Guest permissions settings for this event. Optional."
         },
         "location": {
           "description": "Optional. Geographic location of the event as free-form text.",
@@ -829,47 +1047,66 @@
     "name": "create_event",
     "outputSchema": {
       "$defs": {
+        "Attachment": {
+          "description": "A file attachment for an event.",
+          "properties": {
+            "fileUrl": {
+              "description": "Required. URL link to the attachment.",
+              "type": "string"
+            },
+            "title": {
+              "description": "Optional. Attachment title. Optional.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "Attendee": {
+          "description": "An event attendee.",
           "properties": {
             "additionalGuests": {
-              "description": "Number of additional guests. Optional. The default is 0.",
+              "description": "Optional. Number of additional guests. Optional. The default is 0.",
               "format": "int32",
               "type": "integer"
             },
             "comment": {
-              "description": "The attendee's response comment. Optional.",
+              "description": "Output only. The attendee's response comment. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "displayName": {
-              "description": "The attendee's name, if available. Optional.",
+              "description": "Optional. The attendee's name. Optional.",
               "type": "string"
             },
             "email": {
-              "description": "The attendee's email address, if available. This field must be present when adding an attendee. It must be a valid email address as per RFC5322. Required when adding an attendee.",
+              "description": "Required. The attendee's email address. This field must be present when adding an attendee. It must be a valid email address as per RFC5322.",
               "type": "string"
             },
             "id": {
-              "description": "The attendee's Profile ID, if available.",
+              "description": "Output only. The attendee's Profile ID. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "optionalAttendee": {
-              "description": "Whether this is an optional attendee. Optional. The default is False.",
+              "description": "Optional. Whether this is an optional attendee. Optional. The default is False.",
               "type": "boolean"
             },
             "organizer": {
-              "description": "Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "description": "Output only. Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             },
             "resource": {
-              "description": "Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
+              "description": "Optional. Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
               "type": "boolean"
             },
             "responseStatus": {
-              "description": "The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
+              "description": "Optional. The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
               "type": "string"
             },
             "self": {
-              "description": "Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "description": "Output only. Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             }
           },
@@ -889,6 +1126,24 @@
             "timeZone": {
               "description": "TZDB timezone name if available.",
               "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "GuestPermissions": {
+          "description": "Guest permissions details.",
+          "properties": {
+            "guestsCanInviteOthers": {
+              "description": "Optional. Whether attendees other than the organizer can invite others to the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanModify": {
+              "description": "Optional. Whether attendees other than the organizer can modify the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanSeeGuests": {
+              "description": "Optional. Whether attendees other than the organizer can see who the event's attendees are. Optional.",
+              "type": "boolean"
             }
           },
           "type": "object"
@@ -927,6 +1182,13 @@
         }
       },
       "properties": {
+        "attachments": {
+          "description": "File attachments for the event.",
+          "items": {
+            "$ref": "#/$defs/Attachment"
+          },
+          "type": "array"
+        },
         "attendees": {
           "description": "The attendees of the event.",
           "items": {
@@ -961,6 +1223,10 @@
         "eventType": {
           "description": "Specific type of the event. This cannot be modified after the event is created. Possible values are: * `birthday` - A special all-day event with an annual recurrence. * `default` - A regular event or not further specified. * `focusTime` - A focus-time event. * `fromGmail` - An event from Gmail. This type of event cannot be created. * `outOfOffice` - An out-of-office event. * `workingLocation` - A working location event.",
           "type": "string"
+        },
+        "guestPermissions": {
+          "$ref": "#/$defs/GuestPermissions",
+          "description": "Guest permissions for the event."
         },
         "htmlLink": {
           "description": "An absolute link to this event in the Google Calendar Web UI. Read-only.",
@@ -1039,6 +1305,95 @@
     "description": "Updates a calendar event.\n\nUse this tool for queries like:\n\n * Update the event 'Meeting with Jane' to be one hour later.\n * Add john.doe@google.com to the meeting tomorrow.\n\nExample:\n\n    update_event(\n        eventId='event123',\n        summary='Meeting with Jane and John'\n    )\n    # Updates the summary of event with id 'event123' on the primary calendar to 'Meeting with Jane and John'.\n",
     "inputSchema": {
       "$defs": {
+        "Attachment": {
+          "description": "A file attachment for an event.",
+          "properties": {
+            "fileUrl": {
+              "description": "Required. URL link to the attachment.",
+              "type": "string"
+            },
+            "title": {
+              "description": "Optional. Attachment title. Optional.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "fileUrl"
+          ],
+          "type": "object"
+        },
+        "Attendee": {
+          "description": "An event attendee.",
+          "properties": {
+            "additionalGuests": {
+              "description": "Optional. Number of additional guests. Optional. The default is 0.",
+              "format": "int32",
+              "type": "integer"
+            },
+            "comment": {
+              "description": "Output only. The attendee's response comment. Optional. Read-only.",
+              "readOnly": true,
+              "type": "string"
+            },
+            "displayName": {
+              "description": "Optional. The attendee's name. Optional.",
+              "type": "string"
+            },
+            "email": {
+              "description": "Required. The attendee's email address. This field must be present when adding an attendee. It must be a valid email address as per RFC5322.",
+              "type": "string"
+            },
+            "id": {
+              "description": "Output only. The attendee's Profile ID. Optional. Read-only.",
+              "readOnly": true,
+              "type": "string"
+            },
+            "optionalAttendee": {
+              "description": "Optional. Whether this is an optional attendee. Optional. The default is False.",
+              "type": "boolean"
+            },
+            "organizer": {
+              "description": "Output only. Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "readOnly": true,
+              "type": "boolean"
+            },
+            "resource": {
+              "description": "Optional. Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
+              "type": "boolean"
+            },
+            "responseStatus": {
+              "description": "Optional. The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
+              "type": "string"
+            },
+            "self": {
+              "description": "Output only. Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "readOnly": true,
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "email"
+          ],
+          "type": "object"
+        },
+        "GuestPermissions": {
+          "description": "Guest permissions details.",
+          "properties": {
+            "guestsCanInviteOthers": {
+              "description": "Optional. Whether attendees other than the organizer can invite others to the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanModify": {
+              "description": "Optional. Whether attendees other than the organizer can modify the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanSeeGuests": {
+              "description": "Optional. Whether attendees other than the organizer can see who the event's attendees are. Optional.",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        },
         "Reminder": {
           "description": "An event reminder.",
           "properties": {
@@ -1065,12 +1420,45 @@
           "description": "Optional. Allows to create or update a Google Meet url for the event. By default, no Google Meet url is created or updated. No Google Meet url is created or updated if Meet is disabled for the user, but the event update will succeed.",
           "type": "boolean"
         },
+        "addedAttachments": {
+          "description": "Optional. File attachments to add to the event.",
+          "items": {
+            "$ref": "#/$defs/Attachment"
+          },
+          "type": "array"
+        },
         "addedAttendeeEmails": {
-          "description": "Optional. The additional attendees of the event, as email addresses.",
+          "deprecated": true,
+          "description": "Optional. Deprecated: use `added_attendees` instead. The additional attendees of the event, as email addresses.",
           "items": {
             "type": "string"
           },
           "type": "array"
+        },
+        "addedAttendees": {
+          "description": "Optional. The additional attendees of the event. Updates the attendees of the event if the attendee is not already present.",
+          "items": {
+            "$ref": "#/$defs/Attendee"
+          },
+          "type": "array"
+        },
+        "allDay": {
+          "description": "Optional. Whether the event is an all-day event. Will not be updated if not set. This field can be used to update a timed event to an all-day event and vice versa. If set, `start_time` and `end_time` must also be provided. If true, the start and end time are treated as midnight.",
+          "type": "boolean"
+        },
+        "availability": {
+          "description": "Optional. Whether the event blocks time on the calendar. Optional.",
+          "enum": [
+            "AVAILABILITY_UNSPECIFIED",
+            "AVAILABILITY_BUSY",
+            "AVAILABILITY_FREE"
+          ],
+          "type": "string",
+          "x-google-enum-descriptions": [
+            "Default value. Will be treated as BUSY.",
+            "The event blocks time on the calendar.",
+            "The event does not block time on the calendar (Free / Available)."
+          ]
         },
         "calendarId": {
           "description": "Optional. The calendar ID of the event to update. The default is the user's primary calendar.",
@@ -1093,8 +1481,12 @@
           "type": "string"
         },
         "googleMeetUrl": {
-          "description": "Optional. Allows attaching an existing Google Meet URL or meeting ID to the event. If set, this URL will be attached to the event instead of generating a new Google Meet room, even if `add_google_meet_url` is set to `true`.",
+          "description": "Optional. Allows attaching an existing Google Meet URL or meeting ID to the event. If set, this URL will be attached to the event instead of generating a new Google Meet room, even if `addGoogleMeetUrl` is set to `true`.",
           "type": "string"
+        },
+        "guestPermissions": {
+          "$ref": "#/$defs/GuestPermissions",
+          "description": "Optional. Guest permissions settings for this event. Optional."
         },
         "location": {
           "description": "Optional. The new location of the event. Will not be updated if not set.",
@@ -1123,6 +1515,13 @@
           },
           "type": "array"
         },
+        "removedAttachmentFileUrls": {
+          "description": "Optional. File attachments to remove from the event.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
         "removedAttendeeEmails": {
           "description": "Optional. The attendees of the event to remove, as email addresses.",
           "items": {
@@ -1138,6 +1537,10 @@
           "description": "Optional. The new title of the event. Will not be updated if not set.",
           "type": "string"
         },
+        "timeZone": {
+          "description": "Optional. Time zone of the event formatted as a strictly case-sensitive IANA Time Zone Database name (e.g., 'America/Los_Angeles'). Defaults to the user's primary time zone if omitted and the event's start or end times are updated. Dictates the display time zone, overriding timezone offsets provided in start_time or end_time (e.g. 'Europe/Zurich').",
+          "type": "string"
+        },
         "visibility": {
           "description": "Optional. New visibility of the event. Possible values are: * `default` - Uses the default visibility for events on the calendar. This is the default value. * `public` - The event is public and event details are visible to all readers of the calendar. * `private` - The event is private and only event attendees may view event details.",
           "type": "string"
@@ -1151,47 +1554,66 @@
     "name": "update_event",
     "outputSchema": {
       "$defs": {
+        "Attachment": {
+          "description": "A file attachment for an event.",
+          "properties": {
+            "fileUrl": {
+              "description": "Required. URL link to the attachment.",
+              "type": "string"
+            },
+            "title": {
+              "description": "Optional. Attachment title. Optional.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "Attendee": {
+          "description": "An event attendee.",
           "properties": {
             "additionalGuests": {
-              "description": "Number of additional guests. Optional. The default is 0.",
+              "description": "Optional. Number of additional guests. Optional. The default is 0.",
               "format": "int32",
               "type": "integer"
             },
             "comment": {
-              "description": "The attendee's response comment. Optional.",
+              "description": "Output only. The attendee's response comment. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "displayName": {
-              "description": "The attendee's name, if available. Optional.",
+              "description": "Optional. The attendee's name. Optional.",
               "type": "string"
             },
             "email": {
-              "description": "The attendee's email address, if available. This field must be present when adding an attendee. It must be a valid email address as per RFC5322. Required when adding an attendee.",
+              "description": "Required. The attendee's email address. This field must be present when adding an attendee. It must be a valid email address as per RFC5322.",
               "type": "string"
             },
             "id": {
-              "description": "The attendee's Profile ID, if available.",
+              "description": "Output only. The attendee's Profile ID. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "optionalAttendee": {
-              "description": "Whether this is an optional attendee. Optional. The default is False.",
+              "description": "Optional. Whether this is an optional attendee. Optional. The default is False.",
               "type": "boolean"
             },
             "organizer": {
-              "description": "Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "description": "Output only. Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             },
             "resource": {
-              "description": "Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
+              "description": "Optional. Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
               "type": "boolean"
             },
             "responseStatus": {
-              "description": "The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
+              "description": "Optional. The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
               "type": "string"
             },
             "self": {
-              "description": "Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "description": "Output only. Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             }
           },
@@ -1211,6 +1633,24 @@
             "timeZone": {
               "description": "TZDB timezone name if available.",
               "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "GuestPermissions": {
+          "description": "Guest permissions details.",
+          "properties": {
+            "guestsCanInviteOthers": {
+              "description": "Optional. Whether attendees other than the organizer can invite others to the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanModify": {
+              "description": "Optional. Whether attendees other than the organizer can modify the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanSeeGuests": {
+              "description": "Optional. Whether attendees other than the organizer can see who the event's attendees are. Optional.",
+              "type": "boolean"
             }
           },
           "type": "object"
@@ -1249,6 +1689,13 @@
         }
       },
       "properties": {
+        "attachments": {
+          "description": "File attachments for the event.",
+          "items": {
+            "$ref": "#/$defs/Attachment"
+          },
+          "type": "array"
+        },
         "attendees": {
           "description": "The attendees of the event.",
           "items": {
@@ -1283,6 +1730,10 @@
         "eventType": {
           "description": "Specific type of the event. This cannot be modified after the event is created. Possible values are: * `birthday` - A special all-day event with an annual recurrence. * `default` - A regular event or not further specified. * `focusTime` - A focus-time event. * `fromGmail` - An event from Gmail. This type of event cannot be created. * `outOfOffice` - An out-of-office event. * `workingLocation` - A working location event.",
           "type": "string"
+        },
+        "guestPermissions": {
+          "$ref": "#/$defs/GuestPermissions",
+          "description": "Guest permissions for the event."
         },
         "htmlLink": {
           "description": "An absolute link to this event in the Google Calendar Web UI. Read-only.",
@@ -1395,47 +1846,66 @@
     "name": "delete_event",
     "outputSchema": {
       "$defs": {
+        "Attachment": {
+          "description": "A file attachment for an event.",
+          "properties": {
+            "fileUrl": {
+              "description": "Required. URL link to the attachment.",
+              "type": "string"
+            },
+            "title": {
+              "description": "Optional. Attachment title. Optional.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "Attendee": {
+          "description": "An event attendee.",
           "properties": {
             "additionalGuests": {
-              "description": "Number of additional guests. Optional. The default is 0.",
+              "description": "Optional. Number of additional guests. Optional. The default is 0.",
               "format": "int32",
               "type": "integer"
             },
             "comment": {
-              "description": "The attendee's response comment. Optional.",
+              "description": "Output only. The attendee's response comment. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "displayName": {
-              "description": "The attendee's name, if available. Optional.",
+              "description": "Optional. The attendee's name. Optional.",
               "type": "string"
             },
             "email": {
-              "description": "The attendee's email address, if available. This field must be present when adding an attendee. It must be a valid email address as per RFC5322. Required when adding an attendee.",
+              "description": "Required. The attendee's email address. This field must be present when adding an attendee. It must be a valid email address as per RFC5322.",
               "type": "string"
             },
             "id": {
-              "description": "The attendee's Profile ID, if available.",
+              "description": "Output only. The attendee's Profile ID. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "optionalAttendee": {
-              "description": "Whether this is an optional attendee. Optional. The default is False.",
+              "description": "Optional. Whether this is an optional attendee. Optional. The default is False.",
               "type": "boolean"
             },
             "organizer": {
-              "description": "Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "description": "Output only. Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             },
             "resource": {
-              "description": "Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
+              "description": "Optional. Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
               "type": "boolean"
             },
             "responseStatus": {
-              "description": "The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
+              "description": "Optional. The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
               "type": "string"
             },
             "self": {
-              "description": "Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "description": "Output only. Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             }
           },
@@ -1455,6 +1925,24 @@
             "timeZone": {
               "description": "TZDB timezone name if available.",
               "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "GuestPermissions": {
+          "description": "Guest permissions details.",
+          "properties": {
+            "guestsCanInviteOthers": {
+              "description": "Optional. Whether attendees other than the organizer can invite others to the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanModify": {
+              "description": "Optional. Whether attendees other than the organizer can modify the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanSeeGuests": {
+              "description": "Optional. Whether attendees other than the organizer can see who the event's attendees are. Optional.",
+              "type": "boolean"
             }
           },
           "type": "object"
@@ -1493,6 +1981,13 @@
         }
       },
       "properties": {
+        "attachments": {
+          "description": "File attachments for the event.",
+          "items": {
+            "$ref": "#/$defs/Attachment"
+          },
+          "type": "array"
+        },
         "attendees": {
           "description": "The attendees of the event.",
           "items": {
@@ -1527,6 +2022,10 @@
         "eventType": {
           "description": "Specific type of the event. This cannot be modified after the event is created. Possible values are: * `birthday` - A special all-day event with an annual recurrence. * `default` - A regular event or not further specified. * `focusTime` - A focus-time event. * `fromGmail` - An event from Gmail. This type of event cannot be created. * `outOfOffice` - An out-of-office event. * `workingLocation` - A working location event.",
           "type": "string"
+        },
+        "guestPermissions": {
+          "$ref": "#/$defs/GuestPermissions",
+          "description": "Guest permissions for the event."
         },
         "htmlLink": {
           "description": "An absolute link to this event in the Google Calendar Web UI. Read-only.",
@@ -1648,47 +2147,66 @@
     "name": "respond_to_event",
     "outputSchema": {
       "$defs": {
+        "Attachment": {
+          "description": "A file attachment for an event.",
+          "properties": {
+            "fileUrl": {
+              "description": "Required. URL link to the attachment.",
+              "type": "string"
+            },
+            "title": {
+              "description": "Optional. Attachment title. Optional.",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "Attendee": {
+          "description": "An event attendee.",
           "properties": {
             "additionalGuests": {
-              "description": "Number of additional guests. Optional. The default is 0.",
+              "description": "Optional. Number of additional guests. Optional. The default is 0.",
               "format": "int32",
               "type": "integer"
             },
             "comment": {
-              "description": "The attendee's response comment. Optional.",
+              "description": "Output only. The attendee's response comment. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "displayName": {
-              "description": "The attendee's name, if available. Optional.",
+              "description": "Optional. The attendee's name. Optional.",
               "type": "string"
             },
             "email": {
-              "description": "The attendee's email address, if available. This field must be present when adding an attendee. It must be a valid email address as per RFC5322. Required when adding an attendee.",
+              "description": "Required. The attendee's email address. This field must be present when adding an attendee. It must be a valid email address as per RFC5322.",
               "type": "string"
             },
             "id": {
-              "description": "The attendee's Profile ID, if available.",
+              "description": "Output only. The attendee's Profile ID. Optional. Read-only.",
+              "readOnly": true,
               "type": "string"
             },
             "optionalAttendee": {
-              "description": "Whether this is an optional attendee. Optional. The default is False.",
+              "description": "Optional. Whether this is an optional attendee. Optional. The default is False.",
               "type": "boolean"
             },
             "organizer": {
-              "description": "Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "description": "Output only. Whether the attendee is the organizer of the event. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             },
             "resource": {
-              "description": "Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
+              "description": "Optional. Whether the attendee is a resource. Can only be set when the attendee is added to the event for the first time. Subsequent modifications are ignored. Optional. The default is False.",
               "type": "boolean"
             },
             "responseStatus": {
-              "description": "The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
+              "description": "Optional. The attendee's response status. Possible values are: * `needsAction` - The attendee has not responded to the invitation (recommended for new events). * `declined` - The attendee has declined the invitation. * `tentative` - The attendee has tentatively accepted the invitation. * `accepted` - The attendee has accepted the invitation.",
               "type": "string"
             },
             "self": {
-              "description": "Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "description": "Output only. Whether this entry represents the calendar on which this copy of the event appears. Read-only. The default is False.",
+              "readOnly": true,
               "type": "boolean"
             }
           },
@@ -1708,6 +2226,24 @@
             "timeZone": {
               "description": "TZDB timezone name if available.",
               "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "GuestPermissions": {
+          "description": "Guest permissions details.",
+          "properties": {
+            "guestsCanInviteOthers": {
+              "description": "Optional. Whether attendees other than the organizer can invite others to the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanModify": {
+              "description": "Optional. Whether attendees other than the organizer can modify the event. Optional.",
+              "type": "boolean"
+            },
+            "guestsCanSeeGuests": {
+              "description": "Optional. Whether attendees other than the organizer can see who the event's attendees are. Optional.",
+              "type": "boolean"
             }
           },
           "type": "object"
@@ -1746,6 +2282,13 @@
         }
       },
       "properties": {
+        "attachments": {
+          "description": "File attachments for the event.",
+          "items": {
+            "$ref": "#/$defs/Attachment"
+          },
+          "type": "array"
+        },
         "attendees": {
           "description": "The attendees of the event.",
           "items": {
@@ -1780,6 +2323,10 @@
         "eventType": {
           "description": "Specific type of the event. This cannot be modified after the event is created. Possible values are: * `birthday` - A special all-day event with an annual recurrence. * `default` - A regular event or not further specified. * `focusTime` - A focus-time event. * `fromGmail` - An event from Gmail. This type of event cannot be created. * `outOfOffice` - An out-of-office event. * `workingLocation` - A working location event.",
           "type": "string"
+        },
+        "guestPermissions": {
+          "$ref": "#/$defs/GuestPermissions",
+          "description": "Guest permissions for the event."
         },
         "htmlLink": {
           "description": "An absolute link to this event in the Google Calendar Web UI. Read-only.",
