@@ -22,7 +22,7 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 | [developerknowledge.googleapis.com/mcp] | 2 | 1 | ✗ |
 | [gmailmcp.googleapis.com/mcp/v1] | 2 | 0 | ✗ |
 | [drivemcp.googleapis.com/mcp/v1] | 1 | 0 | ✗ |
-| [calendarmcp.googleapis.com/mcp/v1] | 2 | 0 | ✗ |
+| [calendarmcp.googleapis.com/mcp/v1] | 3 | 0 | ✗ |
 | [mcp.canva.com/mcp] | ? | ? | ? |
 | [mcp.na1.ironcladapp.com/mcp] | ? | ? | ? |
 | [microsoft365.mcp.claude.com/mcp] | ? | ? | ? |
