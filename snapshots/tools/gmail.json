@@ -772,7 +772,7 @@
       "readOnlyHint": false,
       "title": "Creates a new label."
     },
-    "description": "Creates a new label in the authenticated user's Gmail account.",
+    "description": "Creates a new label in the authenticated user's Gmail account.\nSupports creating nested labels (sub-labels) using a forward slash (e.g., 'Projects/Alpha/Sprint-1').\nBy default, parent labels will be automatically created if they do not exist.\n",
     "inputSchema": {
       "$defs": {
         "LabelColor": {
@@ -792,6 +792,10 @@
       },
       "description": "Request message for CreateLabel RPC.",
       "properties": {
+        "autoCreateParentLabels": {
+          "description": "Optional. Whether to automatically create parent labels for nested labels (separated by '/'). Defaults to true.",
+          "type": "boolean"
+        },
         "color": {
           "$ref": "#/$defs/LabelColor",
           "description": "Optional. The color of the label."
