@@ -647,8 +647,8 @@
     "name": "list_calendars",
     "outputSchema": {
       "$defs": {
-        "Calendar": {
-          "description": "A calendar is a collection of related events, along with additional metadata such as summary, default time zone, etc. Each calendar is identified by an ID, which is an email address. Calendars can be shared with others. Primary calendars are owned by their associated user account, other calendars are owned by a single data owner.",
+        "CalendarListItem": {
+          "description": "An entry in the user's calendar list. It stores the identifier of a calendar, which is an email address, along with additional metadata such as summary, default time zone, etc. Calendars can be shared with others. Primary calendars are owned by their associated user account, other calendars are owned by a single data owner.",
           "properties": {
             "description": {
               "description": "Description of the calendar. Optional. Read-only.",
@@ -675,7 +675,7 @@
         "calendars": {
           "description": "List of calendars on the calendar list.",
           "items": {
-            "$ref": "#/$defs/Calendar"
+            "$ref": "#/$defs/CalendarListItem"
           },
           "type": "array"
         },
