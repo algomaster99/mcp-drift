@@ -142,13 +142,13 @@
   {
     "name": "find_case_from_reference",
     "title": "Find Case from Reference",
-    "description": "Resolves a citation, case name, docket number, short cite, quote, or mixed reference into a Descrybe case or candidate set. Resolved cases and candidates include case_id, the Descrybe canonical identifier accepted by known-case tools. The context_text field can improve short, bare, or ambiguous references.",
+    "description": "Resolves a citation, case name, case caption, party name, party-name variant, docket number, short cite, quote, or mixed reference into a Descrybe case or candidate set. Use this for party-name or docket-number case lookup when the user does not already have a Descrybe case_id. Resolved cases and candidates include case_id, the Descrybe canonical identifier accepted by known-case tools. The context_text field can improve short, bare, or ambiguous references.",
     "inputSchema": {
       "type": "object",
       "properties": {
         "reference": {
           "type": "string",
-          "description": "Free-form case reference to resolve, including citations, case names, docket numbers, short cites, quote snippets, or nearby reference text."
+          "description": "Free-form case reference to resolve, including citations, case names, case captions, party names, party-name variants, docket numbers, short cites, quote snippets, or nearby reference text."
         },
         "jurisdiction": {
           "type": "string",
@@ -165,7 +165,7 @@
         },
         "docket_hint": {
           "type": "string",
-          "description": "Optional docket number hint."
+          "description": "Optional docket number hint. Use this when the user gives a docket number, case number, civil action number, criminal action number, or No. value."
         },
         "quote_hint": {
           "type": "string",
