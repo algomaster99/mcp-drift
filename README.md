@@ -41,7 +41,7 @@ A client cannot indefinitely have a persistent connection with the MCP server.
 | [www.expedia.com/mcp] | ? | ? | ? |
 | [mcp.linear.app/mcp] | ? | ? | ? |
 | [mcp.monday.com/mcp] | ? | ? | ? |
-| [mcp.descrybe.com/mcp] | 2 | ✗ | ✗ |
+| [mcp.descrybe.com/mcp] | 3 | ✗ | ✗ |
 | [mcp.asana.com/v2/mcp] | ? | ? | ? |
 | [mcp.miro.com] | ? | ? | ? |
 | [api.solveintelligence.com/mcp] | ? | ? | ? |
