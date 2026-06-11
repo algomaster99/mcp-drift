@@ -534,6 +534,11 @@
           "description": "A token that can be used in a subsequent call to retrieve the next page of threads. Present only if there are more results. If the number of threads matching the query exceeds the page_size limit, the response will contain a `next_page_token`. To retrieve the next page of results, pass this token in the `page_token` field of the next `SearchThreadsRequest`.",
           "type": "string"
         },
+        "resultCountEstimate": {
+          "description": "The estimated result count for this query. It should be treated as a lower bound, so for example if it is 500, then the count can be reported to the user as \"500+\".",
+          "format": "int64",
+          "type": "string"
+        },
         "threads": {
           "description": "List of thread summaries.",
           "items": {
