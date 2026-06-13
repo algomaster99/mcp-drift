@@ -6,6 +6,12 @@
     "mimeType": "text/markdown"
   },
   {
+    "uri": "skill://hf-mem/SKILL.md",
+    "name": "hf-mem",
+    "description": "Hugging Face CLI to estimate the required memory to load Safetensors or GGUF model weights for inference from the Hugging Face Hub",
+    "mimeType": "text/markdown"
+  },
+  {
     "uri": "skill://huggingface-best/SKILL.md",
     "name": "huggingface-best",
     "description": "Use when the user asks about finding the best, top, or recommended model for a task, wants to know what AI model to use, or wants to compare models by benchmark scores. Triggers on: \"best model for X\", \"what model should I use for\", \"top models for [task]\", \"which model runs on my laptop/machine/device\", \"recommend a model for\", \"what LLM should I use for\", \"compare models for\", \"what's state of the art for\", or any question about choosing an AI model for a specific use case. Always use this skill when the user wants model recommendations or comparisons, even if they don't explicitly mention HuggingFace or benchmarks.",
@@ -39,6 +45,12 @@
     "uri": "skill://huggingface-local-models.tar.gz",
     "name": "huggingface-local-models.tar.gz",
     "description": "Use to select models to run locally with llama.cpp and GGUF on CPU, Mac Metal, CUDA, or ROCm. Covers finding GGUFs, quant selection, running servers, exact GGUF file lookup, conversion, and OpenAI-compatible local serving.",
+    "mimeType": "application/gzip"
+  },
+  {
+    "uri": "skill://huggingface-lora-space-builder.tar.gz",
+    "name": "huggingface-lora-space-builder.tar.gz",
+    "description": "Build and publish a Gradio demo on Hugging Face Spaces for a user-provided LoRA. Use when someone asks to create, generate, ship, or publish a Space, demo, Gradio app, or playground for a LoRA — including LoRAs for Qwen-Image, Qwen-Image-Edit, LTX-Video, Wan, FLUX, SDXL, or other diffusion base models. Also triggers when someone describes a LoRA they trained or hosts on the Hub and wants to share it. Covers picking the right base pipeline and `diffusers` inference recipe, designing a UI tailored to the LoRA's task and inputs (Union/multi-task control, edit, video, image, etc.), respecting model-card recommendations (trigger words, steps, guidance, LoRA scale, example inputs), and shipping to ZeroGPU hardware as a private Space by default.",
     "mimeType": "application/gzip"
   },
   {
@@ -94,6 +106,12 @@
     "name": "transformers-js.tar.gz",
     "description": "Use Transformers.js to run state-of-the-art machine learning models directly in JavaScript/TypeScript. Supports NLP (text classification, translation, summarization), computer vision (image classification, object detection), audio (speech recognition, audio classification), and multimodal tasks. Works in browsers and server-side runtimes (Node.js, Bun, Deno) with WebGPU/WASM using pre-trained models from Hugging Face Hub.",
     "mimeType": "application/gzip"
+  },
+  {
+    "uri": "skill://trl-training/SKILL.md",
+    "name": "trl-training",
+    "description": "Train and fine-tune transformer language models using TRL (Transformers Reinforcement Learning). Supports SFT, DPO, GRPO, KTO, RLOO and Reward Model training via CLI commands.",
+    "mimeType": "text/markdown"
   },
   {
     "uri": "skill://index.json",
