@@ -29,7 +29,8 @@
           "enum": [
             "sonnet",
             "opus",
-            "haiku"
+            "haiku",
+            "fable"
           ]
         },
         "run_in_background": {
